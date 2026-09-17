@@ -9,8 +9,8 @@ export default function ChatMessage({ message }: ChatMessageBubbleProps) {
 
   return (
     <div className={`chat-message ${isUser ? 'chat-message--user' : 'chat-message--assistant'}`}>
-      <div className="chat-message__avatar">
-        {isUser ? 'Y' : '✦'}
+      <div className="chat-message__avatar" style={{ background: isUser ? undefined : '#fff', overflow: 'hidden', display: 'grid', placeItems: 'center', padding: isUser ? undefined : '2px', width: '2.35rem', height: '2.35rem', borderRadius: '6px' }}>
+        {isUser ? 'Y' : <img src="/ai-logo.png" alt="AI" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />}
       </div>
       <div className="chat-message__content">
         {message.content}

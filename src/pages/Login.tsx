@@ -47,7 +47,7 @@ export default function Login() {
             src="/logo.png"
             alt="Udiyam AI"
             style={{
-              height: '3.6rem',
+              height: '5rem',
               width: 'auto',
               objectFit: 'contain',
             }}

@@ -16,39 +16,75 @@ export interface KnowledgeChunk {
 
 /**
  * Full-text search the knowledge_base table.
- * Returns up to `limit` chunks ranked by relevance.
+ * Tries websearch FTS first, falls back to plain FTS, then ilike.
  */
 export async function searchKnowledge(
   query: string,
-  limit = 10,
+  documentTitle?: string,
+  limit = 30,
 ): Promise<KnowledgeChunk[]> {
-  if (!query.trim()) return [];
+  const q = query.trim();
+  const filterDoc = documentTitle && documentTitle !== 'All' ? documentTitle : null;
 
+  if (!q) {
+    // Return broad sample or specific document chunks in order
+    let req = supabase.from('knowledge_base').select('*');
+    if (filterDoc) {
+      req = req.eq('document_title', filterDoc).order('chunk_number', { ascending: true });
+    }
+    const { data } = await req.limit(limit);
+    return (data ?? []) as KnowledgeChunk[];
+  }
+
+  // 1. Try websearch FTS (most natural)
   try {
-    // Use Postgres full-text search via the generated `fts` column
-    const { data, error } = await supabase
+    let req = supabase
       .from('knowledge_base')
       .select('*')
-      .textSearch('fts', query.trim().split(/\s+/).join(' & '), {
-        type: 'websearch',
-        config: 'english',
-      })
-      .limit(limit);
+      .textSearch('fts', q, { type: 'websearch', config: 'english' });
+    if (filterDoc) req = req.eq('document_title', filterDoc);
+    const { data, error } = await req.limit(limit);
+    if (!error && data && data.length > 0) return data as KnowledgeChunk[];
+  } catch { /* fall through */ }
 
-    if (error) throw error;
-    return (data ?? []) as KnowledgeChunk[];
+  // 2. Try plain FTS
+  try {
+    let req = supabase
+      .from('knowledge_base')
+      .select('*')
+      .textSearch('fts', q, { type: 'plain', config: 'english' });
+    if (filterDoc) req = req.eq('document_title', filterDoc);
+    const { data, error } = await req.limit(limit);
+    if (!error && data && data.length > 0) return data as KnowledgeChunk[];
+  } catch { /* fall through */ }
+
+  // 3. Last resort: ilike on content and title separately
+  try {
+    let reqContent = supabase
+      .from('knowledge_base')
+      .select('*')
+      .ilike('content', `%${q}%`);
+    if (filterDoc) reqContent = reqContent.eq('document_title', filterDoc);
+    const { data: byContent } = await reqContent.limit(Math.ceil(limit / 2));
+
+    let reqTitle = supabase
+      .from('knowledge_base')
+      .select('*')
+      .ilike('document_title', `%${q}%`);
+    if (filterDoc) reqTitle = reqTitle.eq('document_title', filterDoc);
+    const { data: byTitle } = await reqTitle.limit(Math.ceil(limit / 2));
+
+    const combined = [...(byContent ?? []), ...(byTitle ?? [])];
+    // Deduplicate by id
+    const seen = new Set<string>();
+    const unique = combined.filter((c: KnowledgeChunk) => {
+      if (seen.has(c.id)) return false;
+      seen.add(c.id);
+      return true;
+    });
+    return unique.slice(0, limit) as KnowledgeChunk[];
   } catch {
-    // Fallback: simple ilike search if fts fails
-    try {
-      const { data } = await supabase
-        .from('knowledge_base')
-        .select('*')
-        .or(`content.ilike.%${query}%,document_title.ilike.%${query}%,section.ilike.%${query}%`)
-        .limit(limit);
-      return (data ?? []) as KnowledgeChunk[];
-    } catch {
-      return [];
-    }
+    return [];
   }
 }
 
@@ -77,18 +113,16 @@ export async function getKnowledgeDocuments(): Promise<string[]> {
     .order('document_title');
 
   if (!data) return [];
-  // Deduplicate
   return [...new Set(data.map((r: { document_title: string }) => r.document_title))];
 }
 
 /**
  * Build a compact context string from top-N chunks for AI injection.
- * Returns empty string if no results or knowledge base not seeded.
  */
 export async function getKnowledgeContext(userMessage: string, limit = 4): Promise<string> {
   if (!userMessage.trim()) return '';
 
-  const chunks = await searchKnowledge(userMessage, limit);
+  const chunks = await searchKnowledge(userMessage, undefined, limit);
   if (chunks.length === 0) return '';
 
   const formatted = chunks

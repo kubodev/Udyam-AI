@@ -31,7 +31,7 @@ export default function LoadingScreen() {
             src="/logo.png"
             alt="UdyamAI"
             style={{
-              height: '3.25rem',
+              height: '4.5rem',
               width: 'auto',
               objectFit: 'contain',
               marginBottom: '0.4rem',

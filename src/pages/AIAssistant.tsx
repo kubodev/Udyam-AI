@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  Send, Sparkles, RefreshCw, Plus, ListChecks, ShieldCheck, Landmark,
+  Send, RefreshCw, Plus, ListChecks, ShieldCheck, Landmark,
   Calculator, MessageSquare, Trash2, ChevronDown, ChevronRight, Zap,
-  Bot, User, Clock,
+  Bot, User, Clock, Globe, Check,
 } from 'lucide-react';
 import ActionCard, { detectActionCards, type ActionCardData } from '../components/ActionCard';
 import {
   sendChatMessage, getOrCreateConversation, getMessages, saveMessage,
   listConversations, createConversation, deleteConversation,
+  updateConversationTitle, generateConversationTitle,
+  CHAT_LANGUAGES, type ChatLanguage,
 } from '../services/chat';
 import { createTask } from '../services/tasks';
 import { useProfile } from '../contexts/ProfileContext';
@@ -84,21 +86,37 @@ export default function AIAssistant() {
   const [creatingTask, setCreatingTask] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
+    return localStorage.getItem('udyam_chat_lang') || profile?.preferred_language || 'en';
+  });
 
-  const bottomRef   = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const bottomRef       = useRef<HTMLDivElement>(null);
+  const textareaRef     = useRef<HTMLTextAreaElement>(null);
+  const dropdownRef     = useRef<HTMLDivElement>(null);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
 
-  /* ── close dropdown on outside click ── */
+  /* ── close dropdowns on outside click ── */
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
       }
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangDropdownOpen(false);
+      }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  const handleSelectLanguage = (code: string) => {
+    setSelectedLanguage(code);
+    localStorage.setItem('udyam_chat_lang', code);
+    setLangDropdownOpen(false);
+  };
+
+  const currentLang = CHAT_LANGUAGES.find((l) => l.code === selectedLanguage) ?? CHAT_LANGUAGES[0];
 
   /* ── helpers ── */
   const businessContext = profile
@@ -122,6 +140,20 @@ export default function AIAssistant() {
         created_at: m.created_at,
       }))
     );
+
+    // Auto-update conversation title if it still has a default title
+    const firstUserMsg = history.find((m) => m.role === 'user');
+    if (firstUserMsg?.content) {
+      setConversations((prev) => {
+        const target = prev.find((c) => c.id === convId);
+        if (target && (!target.title || target.title === 'New conversation' || target.title === 'New chat')) {
+          const generated = generateConversationTitle(firstUserMsg.content);
+          updateConversationTitle(convId, generated).catch(() => {});
+          return prev.map((c) => (c.id === convId ? { ...c, title: generated } : c));
+        }
+        return prev;
+      });
+    }
   }, []);
 
   /* ── init ── */
@@ -152,7 +184,7 @@ export default function AIAssistant() {
   /* ── new chat ── */
   const handleNewChat = async () => {
     if (!user) return;
-    const convo = await createConversation(user.id);
+    const convo = await createConversation(user.id, 'New chat');
     if (convo) {
       setConversations((prev) => [convo, ...prev]);
       setActiveConvId(convo.id);
@@ -208,10 +240,12 @@ export default function AIAssistant() {
     if (activeConvId) {
       await saveMessage(activeConvId, 'user', messageText);
       const conv = conversations.find((c) => c.id === activeConvId);
-      if (conv && (!conv.title || conv.title === 'New conversation')) {
+      if (conv && (!conv.title || conv.title === 'New conversation' || conv.title === 'New chat')) {
+        const newTitle = generateConversationTitle(messageText);
         setConversations((prev) =>
-          prev.map((c) => (c.id === activeConvId ? { ...c, title: messageText.slice(0, 48) } : c))
+          prev.map((c) => (c.id === activeConvId ? { ...c, title: newTitle } : c))
         );
+        updateConversationTitle(activeConvId, newTitle).catch(() => {});
       }
     }
 
@@ -219,7 +253,7 @@ export default function AIAssistant() {
       .slice(-10)
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const { content } = await sendChatMessage(history, businessContext);
+    const { content } = await sendChatMessage(history, businessContext, selectedLanguage);
     const actionCards = detectActionCards(messageText, content);
 
     const assistantMsg: DisplayMessage = {
@@ -284,7 +318,7 @@ export default function AIAssistant() {
             >
               <Clock size={14} />
               <span className="ai-btn-minimal__label">
-                {activeConv?.title && activeConv.title !== 'New conversation'
+                {activeConv?.title && activeConv.title !== 'New conversation' && activeConv.title !== 'New chat'
                   ? activeConv.title.length > 28
                     ? activeConv.title.slice(0, 26) + '…'
                     : activeConv.title
@@ -317,7 +351,7 @@ export default function AIAssistant() {
                       >
                         <div className="ai-conv-row__body">
                           <span className="ai-conv-row__title">
-                            {conv.title || 'New conversation'}
+                            {conv.title && conv.title !== 'New conversation' ? conv.title : 'New chat'}
                           </span>
                           <span className="ai-conv-row__date">{formatDate(conv.created_at)}</span>
                         </div>
@@ -333,6 +367,56 @@ export default function AIAssistant() {
                       </div>
                     ))
                   )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Language selector */}
+          <div className="ai-dropdown-container" ref={langDropdownRef}>
+            <button
+              className="ai-btn-minimal"
+              onClick={() => setLangDropdownOpen((v) => !v)}
+              title="Select response language"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+            >
+              <Globe size={14} />
+              <span className="ai-btn-minimal__label">
+                {currentLang.native} {currentLang.code !== 'en' ? `(${currentLang.name})` : ''}
+              </span>
+              <ChevronDown
+                size={13}
+                className={`ai-caret ${langDropdownOpen ? 'ai-caret--open' : ''}`}
+              />
+            </button>
+
+            {langDropdownOpen && (
+              <div className="ai-conv-dropdown" style={{ minWidth: '13.5rem', right: 0, left: 'auto' }}>
+                <div className="ai-conv-dropdown__header">
+                  <Globe size={13} />
+                  <span>Response language</span>
+                </div>
+
+                <div className="ai-conv-dropdown__list" style={{ maxHeight: '18rem', overflowY: 'auto' }}>
+                  {CHAT_LANGUAGES.map((lang) => (
+                    <div
+                      key={lang.code}
+                      className={`ai-conv-row ${lang.code === selectedLanguage ? 'ai-conv-row--active' : ''}`}
+                      onClick={() => handleSelectLanguage(lang.code)}
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="ai-conv-row__body">
+                        <span className="ai-conv-row__title" style={{ fontWeight: lang.code === selectedLanguage ? 650 : 400 }}>
+                          {lang.native}
+                        </span>
+                        <span className="ai-conv-row__date">{lang.name}</span>
+                      </div>
+                      {lang.code === selectedLanguage && (
+                        <Check size={14} color="var(--color-primary-600)" />
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -355,13 +439,60 @@ export default function AIAssistant() {
         ) : messages.length === 0 ? (
           <div className="ai-welcome">
             <div className="ai-welcome__glow" />
-            <div className="ai-welcome__icon"><Sparkles size={28} /></div>
+            <div className="ai-welcome__icon" style={{ background: '#fff', border: '1px solid var(--color-surface-200)', overflow: 'hidden', padding: '0.45rem', width: '5.5rem', height: '5.5rem', borderRadius: '16px', boxShadow: '0 8px 24px rgba(0,0,0,0.08)', marginBottom: '1.25rem' }}>
+              <img src="/ai-logo.png" alt="Udyam AI" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
             <h2 className="ai-welcome__title">
               What are we working on{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}?
             </h2>
             <p className="ai-welcome__sub">
               I have your business context. Ask me anything or pick a direction below.
             </p>
+
+            {/* Quick Language Switcher */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Globe size={13} /> Language:
+              </span>
+              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                {CHAT_LANGUAGES.slice(0, 6).map((l) => (
+                  <button
+                    key={l.code}
+                    onClick={() => handleSelectLanguage(l.code)}
+                    style={{
+                      background: selectedLanguage === l.code ? 'var(--color-primary-600)' : 'var(--color-surface-100)',
+                      color: selectedLanguage === l.code ? '#fff' : 'var(--color-surface-700)',
+                      border: `1px solid ${selectedLanguage === l.code ? 'var(--color-primary-600)' : 'var(--color-surface-300)'}`,
+                      borderRadius: '999px',
+                      padding: '0.2rem 0.65rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {l.native}
+                  </button>
+                ))}
+                {CHAT_LANGUAGES.length > 6 && (
+                  <button
+                    onClick={() => setLangDropdownOpen(true)}
+                    style={{
+                      background: 'transparent',
+                      color: 'var(--color-primary-600)',
+                      border: '1px dashed var(--color-primary-300)',
+                      borderRadius: '999px',
+                      padding: '0.2rem 0.55rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    More ({CHAT_LANGUAGES.length - 6}) ▾
+                  </button>
+                )}
+              </div>
+            </div>
             <div className="ai-suggestion-grid">
               {SUGGESTIONS.map(({ text, icon: Icon, color }) => (
                 <button
@@ -385,7 +516,9 @@ export default function AIAssistant() {
                 className={`ai-msg ${msg.role === 'user' ? 'ai-msg--user' : 'ai-msg--ai'} ${msg.isNew ? 'ai-msg--new' : ''}`}
               >
                 {msg.role === 'assistant' && (
-                  <div className="ai-msg__avatar ai-msg__avatar--ai"><Bot size={15} /></div>
+                  <div className="ai-msg__avatar ai-msg__avatar--ai" style={{ background: '#fff', border: '1px solid var(--color-surface-200)', overflow: 'hidden', padding: '1px' }}>
+                    <img src="/ai-logo.png" alt="AI" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  </div>
                 )}
 
                 <div className="ai-msg__body">
@@ -417,14 +550,16 @@ export default function AIAssistant() {
                 </div>
 
                 {msg.role === 'user' && (
-                  <div className="ai-msg__avatar ai-msg__avatar--user"><User size={15} /></div>
+                  <div className="ai-msg__avatar ai-msg__avatar--user"><User size={18} /></div>
                 )}
               </div>
             ))}
 
             {loading && (
               <div className="ai-msg ai-msg--ai ai-msg--new">
-                <div className="ai-msg__avatar ai-msg__avatar--ai"><Bot size={15} /></div>
+                <div className="ai-msg__avatar ai-msg__avatar--ai" style={{ background: '#fff', border: '1px solid var(--color-surface-200)', overflow: 'hidden', padding: '1px' }}>
+                  <img src="/ai-logo.png" alt="AI" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
                 <div className="ai-msg__body">
                   <div className="ai-msg__bubble ai-msg__bubble--ai ai-typing">
                     <span /><span /><span />

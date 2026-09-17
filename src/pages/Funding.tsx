@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Landmark, Search, ExternalLink, Calendar, ChevronRight,
@@ -20,62 +20,148 @@ function formatCurrency(amount: number) {
   return `₹${amount.toLocaleString('en-IN')}`;
 }
 
+/**
+ * Clean up raw PDF-extracted text:
+ * 1. Normalize \r\n → \n
+ * 2. Join soft line-breaks (single \n mid-sentence) into spaces
+ * 3. Collapse 3+ blank lines → 2
+ * 4. Trim each paragraph
+ * 5. Drop empty paragraphs
+ */
+function cleanContent(raw: string): string[] {
+  // Step 1: normalise line endings
+  const text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+  // Step 2: split on double (or more) newlines → real paragraph boundaries
+  const blocks = text.split(/\n{2,}/);
+
+  return blocks
+    .map((block) =>
+      block
+        // Join soft wraps: single \n that doesn't start a numbered/bullet item
+        .replace(/(?<!\n)(\n)(?!\n|\d+\.|•|-|\*)/g, ' ')
+        // Collapse leftover multiple spaces
+        .replace(/ {2,}/g, ' ')
+        .trim()
+    )
+    .filter(Boolean);
+}
+
+// ── Expandable knowledge chunk card ──────────────────────────────────────────
 function KnowledgeCard({ chunk }: { chunk: KnowledgeChunk }) {
   const [expanded, setExpanded] = useState(false);
-  const preview = chunk.content.slice(0, 260).trim();
-  const hasMore = chunk.content.length > 260;
+
+  // Clean paragraphs from raw PDF text
+  const paragraphs = cleanContent(chunk.content);
+
+  // For preview: join cleaned paragraphs into one string, limit chars
+  const fullText = paragraphs.join(' ');
+  const PREVIEW_CHARS = 320;
+  const hasMore = fullText.length > PREVIEW_CHARS;
+  const previewText = hasMore ? fullText.slice(0, PREVIEW_CHARS).trimEnd() + '…' : fullText;
+
+  // Clean section text too
+  const sectionText = chunk.section
+    ? cleanContent(chunk.section).join(' ')
+    : null;
 
   return (
-    <div className="card" style={{ padding: '1.25rem', borderLeft: '3px solid var(--color-primary-500)' }}>
+    <div
+      className="card"
+      style={{
+        padding: '1.25rem',
+        borderLeft: '3px solid var(--color-primary-500)',
+        transition: 'box-shadow 0.15s',
+      }}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+
+          {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem', flexWrap: 'wrap' }}>
-            <FileText size={14} color="var(--color-primary-500)" />
-            <span style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-primary-700)' }}>
+            <FileText size={14} color="var(--color-primary-500)" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-primary-700)' }}>
               {chunk.document_title}
             </span>
             {chunk.category && (
-              <span className="badge badge-primary" style={{ fontSize: '0.6875rem' }}>{chunk.category}</span>
+              <span className="badge badge-primary" style={{ fontSize: '0.6875rem', textTransform: 'capitalize' }}>
+                {chunk.category}
+              </span>
             )}
           </div>
-          {chunk.section && (
-            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)', marginBottom: '0.5rem', fontStyle: 'italic' }}>
-              {chunk.section}
+
+          {/* Section */}
+          {sectionText && (
+            <p style={{
+              fontSize: '0.75rem', color: 'var(--color-surface-500)',
+              marginBottom: '0.625rem', fontStyle: 'italic', lineHeight: 1.5,
+            }}>
+              § {sectionText.length > 120 ? sectionText.slice(0, 120) + '…' : sectionText}
             </p>
           )}
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-700)', lineHeight: 1.65, whiteSpace: 'pre-line' }}>
-            {expanded ? chunk.content : preview}
-            {!expanded && hasMore && '…'}
-          </p>
+
+          {/* Content — paragraph-aware rendering */}
+          {expanded ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+              {paragraphs.map((para, i) => (
+                <p key={i} style={{
+                  fontSize: '0.8125rem',
+                  color: 'var(--color-surface-700)',
+                  lineHeight: 1.75,
+                  margin: 0,
+                }}>
+                  {para}
+                </p>
+              ))}
+            </div>
+          ) : (
+            <p style={{
+              fontSize: '0.8125rem',
+              color: 'var(--color-surface-700)',
+              lineHeight: 1.75,
+              margin: 0,
+            }}>
+              {previewText}
+            </p>
+          )}
+
           {hasMore && (
             <button
               onClick={() => setExpanded(!expanded)}
               style={{
-                marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.25rem',
+                marginTop: '0.625rem', display: 'flex', alignItems: 'center', gap: '0.25rem',
                 background: 'none', border: 'none', cursor: 'pointer',
-                fontSize: '0.75rem', color: 'var(--color-primary-600)', fontWeight: 500,
+                fontSize: '0.75rem', color: 'var(--color-primary-600)', fontWeight: 500, padding: 0,
               }}
             >
               {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-              {expanded ? 'Show less' : 'Read more'}
+              {expanded ? 'Show less' : 'Read full text'}
             </button>
           )}
         </div>
-        <div style={{ flexShrink: 0, textAlign: 'right' }}>
+
+        {/* Meta sidebar */}
+        <div style={{ flexShrink: 0, textAlign: 'right', minWidth: '6.5rem', maxWidth: '10rem' }}>
           {chunk.source && (
-            <p style={{ fontSize: '0.6875rem', color: 'var(--color-surface-400)', maxWidth: '10rem', lineHeight: 1.4 }}>
+            <p style={{
+              fontSize: '0.6875rem', color: 'var(--color-surface-400)',
+              lineHeight: 1.4, marginBottom: '0.25rem', wordBreak: 'break-word',
+            }}>
               {chunk.source}
             </p>
           )}
           {chunk.page_start != null && (
-            <p style={{ fontSize: '0.6875rem', color: 'var(--color-surface-400)', marginTop: '0.25rem' }}>
-              pg. {chunk.page_start}
+            <p style={{ fontSize: '0.6875rem', color: 'var(--color-surface-400)', marginBottom: '0.25rem' }}>
+              Page {chunk.page_start}
             </p>
           )}
           {chunk.source_url && (
             <a
               href={chunk.source_url} target="_blank" rel="noopener noreferrer"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: 'var(--color-primary-600)', textDecoration: 'none', marginTop: '0.375rem', justifyContent: 'flex-end' }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.2rem',
+                fontSize: '0.75rem', color: 'var(--color-primary-600)', textDecoration: 'none',
+              }}
             >
               <ExternalLink size={11} /> Source
             </a>
@@ -86,63 +172,69 @@ function KnowledgeCard({ chunk }: { chunk: KnowledgeChunk }) {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
 export default function Funding() {
   const [tab, setTab] = useState<Tab>('opportunities');
+
+  // Opportunities state
   const [opportunities, setOpportunities] = useState<FundingOpportunity[]>([]);
-  const [knowledgeChunks, setKnowledgeChunks] = useState<KnowledgeChunk[]>([]);
-  const [kbDocuments, setKbDocuments] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [kbLoading, setKbLoading] = useState(false);
+  const [loadingOpps, setLoadingOpps] = useState(true);
   const [sector, setSector] = useState('All');
   const [stage, setStage] = useState('All');
   const [query, setQuery] = useState('');
-  const [kbQuery, setKbQuery] = useState('');
 
-  // Load funding opportunities
-  const load = async () => {
-    setLoading(true);
+  // Knowledge base state
+  const [knowledgeChunks, setKnowledgeChunks] = useState<KnowledgeChunk[]>([]);
+  const [kbDocuments, setKbDocuments] = useState<string[]>([]);
+  const [kbLoading, setKbLoading] = useState(false);
+  const [kbQuery, setKbQuery] = useState('');
+  const [selectedDoc, setSelectedDoc] = useState('All');
+  const [kbInitialized, setKbInitialized] = useState(false);
+
+  // ── Load funding opportunities ──
+  const loadOpps = useCallback(async () => {
+    setLoadingOpps(true);
     const results = await searchFunding({
       sector: sector !== 'All' ? sector : undefined,
       stage: stage !== 'All' ? stage : undefined,
     });
     setOpportunities(results);
-    setLoading(false);
-  };
+    setLoadingOpps(false);
+  }, [sector, stage]);
 
-  // Load knowledge base document titles for browsing
-  const loadKbDocuments = async () => {
-    const docs = await getKnowledgeDocuments();
-    setKbDocuments(docs);
-  };
+  useEffect(() => { loadOpps(); }, [loadOpps]);
 
-  useEffect(() => { load(); }, [sector, stage]);
-  useEffect(() => { loadKbDocuments(); }, []);
-
-  // Knowledge search (debounced by effect)
+  // ── Load KB document list on mount ──
   useEffect(() => {
-    if (tab !== 'knowledge') return;
-    const timer = setTimeout(async () => {
-      setKbLoading(true);
-      const results = kbQuery.trim()
-        ? await searchKnowledge(kbQuery, 20)
-        : await searchKnowledge('startup funding grant scheme', 20);
-      setKnowledgeChunks(results);
-      setKbLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [kbQuery, tab]);
+    getKnowledgeDocuments().then(setKbDocuments);
+  }, []);
 
-  // Auto-load when switching to KB tab
+  // ── Load KB chunks when tab opens (initial load) ──
   useEffect(() => {
-    if (tab === 'knowledge' && knowledgeChunks.length === 0) {
+    if (tab === 'knowledge' && !kbInitialized) {
+      setKbInitialized(true);
       setKbLoading(true);
-      searchKnowledge('startup funding grant scheme', 20).then((res) => {
+      // Load a broad initial set
+      searchKnowledge('', undefined, 40).then((res) => {
         setKnowledgeChunks(res);
         setKbLoading(false);
       });
     }
-  }, [tab]);
+  }, [tab, kbInitialized]);
 
+  // ── Debounced KB search & section dropdown ──
+  useEffect(() => {
+    if (!kbInitialized) return;
+    const timer = setTimeout(async () => {
+      setKbLoading(true);
+      const results = await searchKnowledge(kbQuery, selectedDoc, 40);
+      setKnowledgeChunks(results);
+      setKbLoading(false);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [kbQuery, selectedDoc, kbInitialized]);
+
+  // Filtered opportunities (client-side keyword filter)
   const filtered = query
     ? opportunities.filter((o) =>
         (o.name ?? '').toLowerCase().includes(query.toLowerCase()) ||
@@ -151,7 +243,8 @@ export default function Funding() {
       )
     : opportunities;
 
-  const selectStyle = {
+  // ── Styles ──
+  const selectStyle: React.CSSProperties = {
     padding: '0.5rem 0.75rem',
     border: '1px solid var(--color-surface-300)',
     borderRadius: 'var(--radius-md)',
@@ -162,7 +255,7 @@ export default function Funding() {
     cursor: 'pointer',
   };
 
-  const tabStyle = (active: boolean) => ({
+  const tabBtn = (active: boolean): React.CSSProperties => ({
     padding: '0.5rem 1rem',
     borderRadius: 'var(--radius-md)',
     border: 'none',
@@ -181,21 +274,27 @@ export default function Funding() {
     <div className="animate-fade-in">
       <div className="page-header">
         <h1>Funding Opportunities</h1>
-        <p>Verified government schemes, grants, and detailed guidelines — powered by official documents</p>
+        <p>Verified government schemes, grants &amp; official guidelines — powered by 142 indexed document chunks</p>
       </div>
 
-      {/* Tab switcher */}
-      <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '1.25rem', background: 'var(--color-surface-100)', padding: '0.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-surface-200)', width: 'fit-content' }}>
-        <button style={tabStyle(tab === 'opportunities')} onClick={() => setTab('opportunities')}>
+      {/* ── Tab switcher ── */}
+      <div style={{
+        display: 'flex', gap: '0.25rem', marginBottom: '1.25rem',
+        background: 'var(--color-surface-100)', padding: '0.25rem',
+        borderRadius: 'var(--radius-md)', border: '1px solid var(--color-surface-200)',
+        width: 'fit-content',
+      }}>
+        <button style={tabBtn(tab === 'opportunities')} onClick={() => setTab('opportunities')}>
           <Landmark size={15} /> Find Funding
         </button>
-        <button style={tabStyle(tab === 'knowledge')} onClick={() => setTab('knowledge')}>
+        <button style={tabBtn(tab === 'knowledge')} onClick={() => setTab('knowledge')}>
           <BookOpen size={15} /> Knowledge Base
           {kbDocuments.length > 0 && (
             <span style={{
               background: tab === 'knowledge' ? 'rgba(255,255,255,0.25)' : 'var(--color-primary-100)',
               color: tab === 'knowledge' ? '#fff' : 'var(--color-primary-700)',
-              borderRadius: '999px', padding: '0 0.4rem', fontSize: '0.6875rem', fontWeight: 700,
+              borderRadius: '999px', padding: '0.05rem 0.45rem',
+              fontSize: '0.6875rem', fontWeight: 700,
             }}>
               {kbDocuments.length} docs
             </span>
@@ -203,10 +302,11 @@ export default function Funding() {
         </button>
       </div>
 
-      {/* ── OPPORTUNITIES TAB ── */}
+      {/* ══════════════════════════════════════════════
+          OPPORTUNITIES TAB
+      ══════════════════════════════════════════════ */}
       {tab === 'opportunities' && (
         <>
-          {/* Search + Filter Bar */}
           <div className="card" style={{ padding: '0.875rem 1rem', marginBottom: '1.25rem', display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: '12rem' }}>
               <Search size={16} color="var(--color-surface-400)" />
@@ -226,42 +326,38 @@ export default function Funding() {
             </div>
           </div>
 
-          {/* Notice */}
           <div className="alert alert-info" style={{ marginBottom: '1.25rem' }}>
             <p style={{ fontSize: '0.8125rem', lineHeight: 1.5, margin: 0 }}>
-              Showing <strong>{filtered.length}</strong> manually verified opportunities. Source URLs and verification dates shown on each card. Funding facts come from structured data — not AI generation.
+              Showing <strong>{filtered.length}</strong> verified opportunities.{' '}
+              <button
+                onClick={() => setTab('knowledge')}
+                style={{ background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontWeight: 600, fontSize: '0.8125rem', padding: 0, textDecoration: 'underline' }}
+              >
+                Browse 142 detailed scheme guidelines →
+              </button>
             </p>
           </div>
 
-          {/* List */}
-          {loading ? (
+          {loadingOpps ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="card animate-pulse-subtle" style={{ padding: '1.25rem', height: '8rem' }} />
-              ))}
+              {[1, 2, 3].map((i) => <div key={i} className="card animate-pulse-subtle" style={{ padding: '1.25rem', height: '8rem' }} />)}
             </div>
           ) : filtered.length === 0 ? (
             <div className="card">
               <div className="empty-state">
                 <Landmark className="empty-state-icon" />
                 <h3>No matching opportunities</h3>
-                <p>Try adjusting the sector or stage filters, or clear the search query.</p>
+                <p>Try adjusting filters, or <button onClick={() => setTab('knowledge')} style={{ background: 'none', border: 'none', color: 'var(--color-primary-600)', cursor: 'pointer', fontWeight: 600, padding: 0 }}>search the knowledge base</button>.</p>
               </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {filtered.map((opp) => (
-                <Link
-                  key={opp.id}
-                  to={`/funding/${opp.id}`}
-                  style={{ textDecoration: 'none' }}
-                >
+                <Link key={opp.id} to={`/funding/${opp.id}`} style={{ textDecoration: 'none' }}>
                   <div className="card" style={{ padding: '1.25rem', cursor: 'pointer' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                          <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-surface-900)' }}>{opp.name}</h3>
-                        </div>
+                        <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-surface-900)', marginBottom: '0.25rem' }}>{opp.name}</h3>
                         <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-600)', fontWeight: 500, marginBottom: '0.375rem' }}>{opp.provider}</p>
                         <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-600)', lineHeight: 1.5, marginBottom: '0.75rem', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {opp.description}
@@ -282,26 +378,15 @@ export default function Funding() {
                         <ChevronRight size={18} color="var(--color-surface-400)" />
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                           <Calendar size={12} color="var(--color-surface-400)" />
-                          <span style={{ fontSize: '0.6875rem', color: 'var(--color-surface-400)' }}>
-                            Verified {opp.last_verified ?? 'date unknown'}
-                          </span>
+                          <span style={{ fontSize: '0.6875rem', color: 'var(--color-surface-400)' }}>Verified {opp.last_verified ?? 'date unknown'}</span>
                         </div>
-                        {opp.deadline ? (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--color-danger-600)', fontWeight: 500 }}>
-                            Deadline: {opp.deadline}
-                          </span>
-                        ) : (
-                          <span style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>
-                            No deadline specified
-                          </span>
-                        )}
-                        <a
-                          href={opp.source_url ?? '#'} target="_blank" rel="noopener noreferrer"
+                        {opp.deadline
+                          ? <span style={{ fontSize: '0.75rem', color: 'var(--color-danger-600)', fontWeight: 500 }}>Deadline: {opp.deadline}</span>
+                          : <span style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>No deadline</span>}
+                        <a href={opp.source_url ?? '#'} target="_blank" rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: 'var(--color-primary-600)', textDecoration: 'none' }}
-                        >
-                          <ExternalLink size={12} />
-                          Source
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', color: 'var(--color-primary-600)', textDecoration: 'none' }}>
+                          <ExternalLink size={12} /> Source
                         </a>
                       </div>
                     </div>
@@ -313,41 +398,79 @@ export default function Funding() {
         </>
       )}
 
-      {/* ── KNOWLEDGE BASE TAB ── */}
+      {/* ══════════════════════════════════════════════
+          KNOWLEDGE BASE TAB
+      ══════════════════════════════════════════════ */}
       {tab === 'knowledge' && (
         <>
-          {/* KB Search bar */}
-          <div className="card" style={{ padding: '0.875rem 1rem', marginBottom: '1.25rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <Search size={16} color="var(--color-surface-400)" />
-            <input
-              type="text" value={kbQuery} onChange={(e) => setKbQuery(e.target.value)}
-              placeholder="Search scheme guidelines, eligibility, funding amounts…"
-              style={{ flex: 1, border: 'none', outline: 'none', fontSize: '0.875rem', color: 'var(--color-surface-800)', background: 'transparent' }}
-            />
+          {/* Search bar & Section dropper */}
+          <div className="card" style={{ padding: '0.875rem 1rem', marginBottom: '1rem', display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: '14rem' }}>
+              <Search size={16} color="var(--color-surface-400)" />
+              <input
+                type="text"
+                value={kbQuery}
+                onChange={(e) => setKbQuery(e.target.value)}
+                placeholder="Search scheme guidelines, eligibility, funding amounts, deadlines…"
+                style={{ flex: 1, border: 'none', outline: 'none', fontSize: '0.875rem', color: 'var(--color-surface-800)', background: 'transparent' }}
+                autoFocus
+              />
+              {kbQuery && (
+                <button
+                  onClick={() => setKbQuery('')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-surface-400)', fontSize: '1rem', lineHeight: 1 }}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+
+            {kbDocuments.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <select
+                  value={selectedDoc}
+                  onChange={(e) => setSelectedDoc(e.target.value)}
+                  style={{
+                    ...selectStyle,
+                    maxWidth: '22rem',
+                    textOverflow: 'ellipsis',
+                    borderColor: selectedDoc !== 'All' ? 'var(--color-primary-500)' : 'var(--color-surface-300)',
+                    background: selectedDoc !== 'All' ? 'var(--color-primary-50)' : 'var(--color-surface-100)',
+                    color: selectedDoc !== 'All' ? 'var(--color-primary-800)' : 'var(--color-surface-800)',
+                    fontWeight: selectedDoc !== 'All' ? 500 : 400,
+                  }}
+                  title="Filter by scheme or document section"
+                >
+                  <option value="All">All schemes & sections</option>
+                  {kbDocuments.map((doc) => (
+                    <option key={doc} value={doc}>
+                      {doc}
+                    </option>
+                  ))}
+                </select>
+
+                {selectedDoc !== 'All' && (
+                  <button
+                    onClick={() => setSelectedDoc('All')}
+                    title="Clear section filter"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: 'var(--color-primary-600)',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      padding: '0.2rem 0.4rem',
+                    }}
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Source documents available */}
-          {kbDocuments.length > 0 && (
-            <div style={{ marginBottom: '1.25rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)', marginRight: '0.25rem' }}>Schemes indexed:</span>
-              {kbDocuments.map((doc) => (
-                <button
-                  key={doc}
-                  onClick={() => setKbQuery(doc)}
-                  style={{
-                    background: 'var(--color-primary-50)', color: 'var(--color-primary-700)',
-                    border: '1px solid var(--color-primary-200)', borderRadius: '999px',
-                    padding: '0.2rem 0.625rem', fontSize: '0.6875rem', fontWeight: 500, cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {doc}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* AI tip banner */}
+          {/* AI tip */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: '0.625rem',
             background: 'linear-gradient(135deg, #f0f4ff 0%, #faf5ff 100%)',
@@ -356,31 +479,40 @@ export default function Funding() {
           }}>
             <Sparkles size={16} color="#6366f1" style={{ flexShrink: 0 }} />
             <p style={{ fontSize: '0.8125rem', color: '#4338ca', margin: 0, lineHeight: 1.5 }}>
-              <strong>AI-powered:</strong> When you chat with UdyamAI, it automatically searches this knowledge base and uses these documents to give you accurate, document-grounded answers about schemes and eligibility.
+              <strong>AI-powered:</strong> UdyamAI automatically searches these {kbDocuments.length > 0 ? '142' : ''} document chunks when you chat, giving you accurate, document-grounded answers about schemes and eligibility.
             </p>
           </div>
 
           {/* Results */}
           {kbLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="card animate-pulse-subtle" style={{ padding: '1.25rem', height: '7rem' }} />
-              ))}
+              {[1, 2, 3, 4].map((i) => <div key={i} className="card animate-pulse-subtle" style={{ padding: '1.25rem', height: '7rem' }} />)}
             </div>
           ) : knowledgeChunks.length === 0 ? (
             <div className="card">
               <div className="empty-state">
                 <BookOpen className="empty-state-icon" />
-                <h3>No matching knowledge found</h3>
-                <p>Try searching "SISFS eligibility", "GENESIS funding", "BIG scheme", or "NIDHI".</p>
+                <h3>No results found</h3>
+                <p>Try: "SISFS eligibility", "GENESIS funding amount", "BIG scheme", "NIDHI criteria"</p>
               </div>
             </div>
           ) : (
             <>
               <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-500)', marginBottom: '0.75rem' }}>
-                {kbQuery.trim()
-                  ? `${knowledgeChunks.length} result(s) for "${kbQuery}"`
-                  : `Showing ${knowledgeChunks.length} knowledge chunks — search to narrow down`}
+                {kbQuery.trim() ? (
+                  <>
+                    <strong>{knowledgeChunks.length}</strong> result(s) for "<em>{kbQuery}</em>"
+                    {selectedDoc !== 'All' ? <> in <strong>{selectedDoc}</strong></> : null}
+                  </>
+                ) : selectedDoc !== 'All' ? (
+                  <>
+                    <strong>{knowledgeChunks.length}</strong> chunks in <strong>{selectedDoc}</strong>
+                  </>
+                ) : (
+                  <>
+                    <strong>{knowledgeChunks.length}</strong> chunks loaded — use search or select a section from the dropdown above
+                  </>
+                )}
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {knowledgeChunks.map((chunk) => (

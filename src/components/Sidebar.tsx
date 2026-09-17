@@ -81,8 +81,8 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
             src="/logo.png"
             alt="UdyamAI"
             style={{
-              height: '2.85rem',
-              maxWidth: '10.5rem',
+              height: '3.85rem',
+              maxWidth: '12.5rem',
               objectFit: 'contain',
               objectPosition: 'left center',
             }}
