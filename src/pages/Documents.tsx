@@ -2,7 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import {
   FileText, Upload, Trash2, Eye, AlertCircle, CheckCircle,
   Clock, RefreshCw, X, ChevronDown, ChevronUp,
+  MessageSquare,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import {
   uploadDocument, getDocuments, deleteDocument, getDocumentUrl, getDocumentFile, getExtraction, updateDocumentStatus,
@@ -44,6 +46,7 @@ function docTypeLabel(dt: Document['doc_type']) {
 
 export default function Documents() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -177,6 +180,17 @@ export default function Documents() {
       setError(`Could not extract text: ${result.error ?? 'No readable text found.'}`);
     }
     setExtractingId(null);
+  };
+
+  const handleSummarizeWithAI = (doc: Document, extraction: DocumentExtraction) => {
+    const rawText = extraction.extracted_fields?.raw_text;
+    if (typeof rawText !== 'string' || !rawText.trim()) {
+      setError('Extract text from this document before asking the AI to summarise it.');
+      return;
+    }
+    const request = `Please summarise this ${docTypeLabel(doc.doc_type)} in a clear, structured way. Highlight key amounts, dates, parties, potential risks, and practical next steps.\n\n[Extracted document text]\n${rawText.slice(0, 24_000)}`;
+    sessionStorage.setItem('udyam_ai_pending_message', request);
+    navigate('/assistant');
   };
 
   const selectedTypeLabel = DOC_TYPES.find((t) => t.value === uploadType)?.label ?? 'Select type';
@@ -478,6 +492,16 @@ export default function Documents() {
                           <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>
                             Extraction confidence: {Math.round(extraction.confidence * 100)}%
                           </p>
+                        )}
+                        {typeof extraction.extracted_fields?.raw_text === 'string' && (
+                          <button
+                            className="btn btn-primary"
+                            style={{ marginTop: '0.85rem' }}
+                            onClick={() => handleSummarizeWithAI(doc, extraction)}
+                          >
+                            <MessageSquare size={15} />
+                            Send to AI & summarize
+                          </button>
                         )}
                       </div>
                     ) : doc.status === 'extracted' ? (

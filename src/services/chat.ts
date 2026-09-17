@@ -230,7 +230,7 @@ export async function sendChatMessage(
       geminiContents[geminiContents.length - 1].parts.push(...fileParts);
     }
 
-    const model = import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.6-flash';
+    const model = import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.5-flash-lite';
     const requestPayload = {
       system_instruction: { parts: [{ text: SYSTEM_PROMPT + langInstruction }] },
       contents: geminiContents,

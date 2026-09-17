@@ -7,6 +7,7 @@ import {
 import { useProfile } from '../contexts/ProfileContext';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import FinancialRecordsSection from '../components/FinancialRecordsSection';
 
 const quickActions = [
   { label: 'Ask AI', icon: MessageSquare, to: '/assistant', color: 'var(--color-primary-600)' },
@@ -50,6 +51,7 @@ export default function Overview() {
   const [activity, setActivity] = useState<ActivityItem[]>([]);
   const [activityLoading, setActivityLoading] = useState(true);
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
+  const [recordsCount, setRecordsCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -122,7 +124,10 @@ export default function Overview() {
     })();
   }, [user]);
 
-  const financialHealth = profile?.monthly_revenue ? 'Has data' : 'Needs attention';
+  const hasFinancialData = (recordsCount !== null && recordsCount > 0) || Boolean(profile?.monthly_revenue);
+  const financialHealth = hasFinancialData
+    ? (recordsCount !== null && recordsCount > 0 ? `${recordsCount} record${recordsCount === 1 ? '' : 's'}` : 'Has data')
+    : 'Needs attention';
   const fundingReadiness = profile?.udyam_status === 'Registered' ? 'Ready' : 'Incomplete';
   const complianceStatus = profile?.gst_status === 'Registered' ? 'Registered' : 'Not registered';
   const profileComplete = profile?.business_name && profile?.sector && profile?.description ? 'Complete' : 'Needs update';
@@ -237,7 +242,9 @@ export default function Overview() {
 
       {/* Health Indicators */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(11rem, 1fr))', gap: '0.75rem', marginBottom: '1.75rem' }}>
-        <HealthIndicator label="Financial Records" value={financialHealth} variant={financialHealth === 'Has data' ? 'success' : 'warning'} />
+        <a href="#financial-records" style={{ textDecoration: 'none', color: 'inherit', display: 'contents' }}>
+          <HealthIndicator label="Financial Records" value={financialHealth} variant={hasFinancialData ? 'success' : 'warning'} />
+        </a>
         <HealthIndicator label="Funding Readiness" value={fundingReadiness} variant={fundingReadiness === 'Ready' ? 'success' : 'warning'} />
         <HealthIndicator label="GST / Compliance" value={complianceStatus} variant={complianceStatus === 'Registered' ? 'success' : 'danger'} />
         <HealthIndicator label="Business Profile" value={profileComplete} variant={profileComplete === 'Complete' ? 'success' : 'warning'} />
@@ -270,6 +277,15 @@ export default function Overview() {
           </Link>
         ))}
       </div>
+
+      {/* Financial Records Ledger */}
+      {user && (
+        <FinancialRecordsSection
+          userId={user.id}
+          showViewAllLink={true}
+          onRecordsChange={(records) => setRecordsCount(records.length)}
+        />
+      )}
 
       {/* Recent Activity */}
       <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-500)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.875rem' }}>

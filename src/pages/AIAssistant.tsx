@@ -105,6 +105,7 @@ export default function AIAssistant() {
   const dropdownRef     = useRef<HTMLDivElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const fileInputRef    = useRef<HTMLInputElement>(null);
+  const pendingMessageHandledRef = useRef(false);
 
   const loadBankContext = useCallback(async () => {
     if (!user) return;
@@ -328,6 +329,16 @@ export default function AIAssistant() {
 
     if (activeConvId) await saveMessage(activeConvId, 'assistant', content);
   };
+
+  // Documents passes an extracted-text summary request through session storage
+  // so the user lands directly in this chat and receives the answer immediately.
+  useEffect(() => {
+    const pendingMessage = sessionStorage.getItem('udyam_ai_pending_message');
+    if (!pendingMessage || pendingMessageHandledRef.current || initializing || !activeConvId || loading) return;
+    pendingMessageHandledRef.current = true;
+    sessionStorage.removeItem('udyam_ai_pending_message');
+    void handleSend(pendingMessage);
+  }, [activeConvId, initializing, loading]);
 
   const handleFilesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
     const chosen = Array.from(event.target.files ?? []);
