@@ -41,33 +41,29 @@ export default function DashboardLayout() {
           title="Show sidebar (Cmd/Ctrl + B)"
           style={{
             position: 'fixed',
-            top: '1.25rem',
-            left: '1.25rem',
+            top: '1.15rem',
+            left: '1.15rem',
             zIndex: 35,
-            width: '2.5rem',
-            height: '2.5rem',
-            borderRadius: 'var(--radius-md)',
-            background: 'rgba(15, 22, 38, 0.92)',
-            backdropFilter: 'blur(14px)',
-            WebkitBackdropFilter: 'blur(14px)',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
+            width: '2.4rem',
+            height: '2.4rem',
+            borderRadius: 'var(--radius-sm)',
+            background: 'var(--color-surface-100)',
+            border: '1px solid var(--color-surface-300)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--color-surface-400)',
+            color: 'var(--color-surface-700)',
             cursor: 'pointer',
-            transition: 'all 0.15s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(25, 36, 60, 0.95)';
-            e.currentTarget.style.color = '#fff';
-            e.currentTarget.style.borderColor = 'rgba(125, 142, 255, 0.4)';
+            e.currentTarget.style.background = 'var(--color-primary-500)';
+            e.currentTarget.style.color = '#fffbf5';
+            e.currentTarget.style.borderColor = 'var(--color-primary-800)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'rgba(15, 22, 38, 0.92)';
-            e.currentTarget.style.color = 'var(--color-surface-400)';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+            e.currentTarget.style.background = 'var(--color-surface-100)';
+            e.currentTarget.style.color = 'var(--color-surface-700)';
+            e.currentTarget.style.borderColor = 'var(--color-surface-300)';
           }}
         >
           <PanelLeftOpen size={18} />

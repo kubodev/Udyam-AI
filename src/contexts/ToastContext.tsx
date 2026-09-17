@@ -28,10 +28,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const ICON_MAP = { success: CheckCircle, error: XCircle, warning: AlertCircle, info: Info };
   const COLOR_MAP = {
-    success: { bg: 'rgba(15, 35, 25, 0.88)', border: 'rgba(61, 213, 152, 0.35)', icon: '#3dd598', text: '#a7f3d0' },
-    error:   { bg: 'rgba(40, 18, 22, 0.88)', border: 'rgba(247, 108, 108, 0.35)', icon: '#f76c6c', text: '#fca5a5' },
-    warning: { bg: 'rgba(42, 30, 14, 0.88)', border: 'rgba(245, 165, 36, 0.35)', icon: '#fbbf24', text: '#fde68a' },
-    info:    { bg: 'rgba(20, 28, 52, 0.88)', border: 'rgba(113, 134, 255, 0.35)', icon: '#818cf8', text: '#c7d2fe' },
+    success: { bg: '#e4efe8', border: '#b3cfc0', icon: '#245536', text: '#245536' },
+    error:   { bg: '#f8e4e0', border: '#e3b4ad', icon: '#912018', text: '#912018' },
+    warning: { bg: '#f8ead3', border: '#e4c48a', icon: '#7a4a12', text: '#7a4a12' },
+    info:    { bg: '#e8f0eb', border: '#b3cfc0', icon: '#173d2e', text: '#173d2e' },
   };
 
   return (
@@ -53,10 +53,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
                 padding: '0.875rem 1rem',
                 background: c.bg, border: `1px solid ${c.border}`,
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                borderRadius: 'var(--radius-lg)',
-                boxShadow: '0 12px 32px 0 rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08)',
+                borderRadius: 'var(--radius-sm)',
+                boxShadow: 'var(--shadow-lg)',
                 pointerEvents: 'all',
               }}
             >

@@ -140,14 +140,14 @@ export default function Onboarding() {
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '2.5rem' }}>
-        <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: '2px', background: 'var(--color-primary-500)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Sparkles size={16} color="white" />
         </div>
         <span style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-surface-900)' }}>UdyamAI</span>
       </div>
 
       {/* Card */}
-      <div style={{ width: '100%', maxWidth: '34rem', background: 'linear-gradient(145deg, #182030, #111827)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-lg)', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: '34rem', background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', overflow: 'hidden' }}>
         {/* Progress bar */}
         <div style={{ height: '3px', background: 'var(--color-surface-100)' }}>
           <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, var(--color-primary-500), var(--color-primary-600))', transition: 'width 0.4s ease' }} />
@@ -266,8 +266,8 @@ export default function Onboarding() {
                   </select>
                 </Field>
               </div>
-              <div style={{ padding: '0.85rem 1.15rem', background: 'rgba(98, 117, 245, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(113, 134, 255, 0.28)', backdropFilter: 'blur(12px)' }}>
-                <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', margin: 0, lineHeight: 1.5 }}>
+              <div style={{ padding: '0.85rem 1.15rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-primary-200)' }}>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)', margin: 0, lineHeight: 1.5 }}>
                   💡 This information helps UdyamAI generate accurate funding fit checks and business health assessments. All data is private to your account.
                 </p>
               </div>
@@ -286,9 +286,9 @@ export default function Onboarding() {
                       style={{
                         padding: '0.625rem 0.75rem',
                         borderRadius: 'var(--radius-md)',
-                        border: `1.5px solid ${form.primary_goal === g ? 'rgba(125, 142, 255, 0.6)' : 'rgba(255, 255, 255, 0.08)'}`,
-                        background: form.primary_goal === g ? 'rgba(98, 117, 245, 0.18)' : 'rgba(255, 255, 255, 0.03)',
-                        color: form.primary_goal === g ? '#c7d2fe' : 'var(--color-surface-700)',
+                        border: `1px solid ${form.primary_goal === g ? 'var(--color-primary-500)' : 'var(--color-surface-300)'}`,
+                        background: form.primary_goal === g ? 'var(--color-primary-50)' : 'var(--color-surface-100)',
+                        color: form.primary_goal === g ? 'var(--color-primary-700)' : 'var(--color-surface-700)',
                         fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left',
                         transition: 'all 0.15s ease',
                       }}

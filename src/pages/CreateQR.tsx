@@ -116,9 +116,9 @@ export default function CreateQR() {
             </label>
 
             {error && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(247, 108, 108, 0.3)', backdropFilter: 'blur(12px)' }}>
-                <AlertCircle size={14} color="#f87171" />
-                <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{error}</span>
+              <div className="alert alert-error" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
+                <AlertCircle size={14} color="var(--color-danger-600)" />
+                <span style={{ fontSize: '0.8125rem' }}>{error}</span>
               </div>
             )}
 
@@ -127,9 +127,9 @@ export default function CreateQR() {
             </button>
           </form>
 
-          <div style={{ marginTop: '1.25rem', padding: '0.875rem 1rem', background: 'rgba(245, 165, 36, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(245, 165, 36, 0.28)', backdropFilter: 'blur(12px)' }}>
-            <p style={{ fontSize: '0.8125rem', color: '#fef08a', lineHeight: 1.5, margin: 0 }}>
-              ⚠️ This QR code generates a valid UPI payment payload. UdyamAI does not process or verify payments — customers pay directly through their UPI app.
+          <div className="alert alert-warning" style={{ marginTop: '1.25rem' }}>
+            <p style={{ fontSize: '0.8125rem', lineHeight: 1.5, margin: 0 }}>
+              This QR code generates a valid UPI payment payload. UdyamAI does not process or verify payments — customers pay directly through their UPI app.
             </p>
           </div>
         </div>

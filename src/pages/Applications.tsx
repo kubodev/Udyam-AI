@@ -137,9 +137,9 @@ export default function Applications() {
       )}
 
       {error && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.3)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <AlertCircle size={15} color="#f87171" />
-          <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{error}</span>
+        <div className="alert alert-error" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
+          <AlertCircle size={15} color="var(--color-danger-600)" />
+          <span style={{ fontSize: '0.8125rem' }}>{error}</span>
         </div>
       )}
 
@@ -168,8 +168,8 @@ export default function Applications() {
                   textAlign: 'left', cursor: 'pointer', width: '100%',
                   padding: '0.875rem 1rem',
                   borderRadius: 'var(--radius-md)',
-                  border: `1.5px solid ${selectedApp?.id === app.id ? 'rgba(125, 142, 255, 0.6)' : 'rgba(255, 255, 255, 0.08)'}`,
-                  background: selectedApp?.id === app.id ? 'rgba(98, 117, 245, 0.16)' : 'rgba(255, 255, 255, 0.03)',
+                  border: `1px solid ${selectedApp?.id === app.id ? 'var(--color-primary-500)' : 'var(--color-surface-300)'}`,
+                  background: selectedApp?.id === app.id ? 'var(--color-primary-50)' : 'var(--color-surface-100)',
                   boxShadow: 'var(--shadow-card)', transition: 'all 0.15s ease',
                 }}
               >
@@ -216,15 +216,15 @@ export default function Applications() {
               </div>
 
               {selectedApp.missing_fields && selectedApp.missing_fields.length > 0 && (
-                <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start', padding: '0.875rem 1rem', background: 'rgba(247, 108, 108, 0.1)', border: '1px solid rgba(247, 108, 108, 0.28)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem' }}>
-                  <AlertCircle size={15} color="#f87171" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div className="alert alert-error" style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                  <AlertCircle size={15} color="var(--color-danger-600)" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
-                    <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fca5a5', marginBottom: '0.25rem' }}>
+                    <p style={{ fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.25rem' }}>
                       Missing info — update your profile to complete these:
                     </p>
                     <ul style={{ paddingLeft: '1rem', margin: 0 }}>
                       {selectedApp.missing_fields.map((f) => (
-                        <li key={f} style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{f}</li>
+                        <li key={f} style={{ fontSize: '0.8125rem' }}>{f}</li>
                       ))}
                     </ul>
                   </div>

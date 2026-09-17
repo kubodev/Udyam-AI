@@ -8,8 +8,8 @@ import type { BusinessProfile } from '../types';
 
 const inputStyle = {
   width: '100%', padding: '0.55rem 0.8rem',
-  background: 'rgba(255, 255, 255, 0.04)',
-  border: '1px solid rgba(255, 255, 255, 0.12)',
+  background: 'var(--color-surface-50)',
+  border: '1px solid var(--color-surface-300)',
   color: 'var(--color-surface-800)',
   borderRadius: 'var(--radius-md)', fontSize: '0.875rem', outline: 'none',
   transition: 'border-color 0.15s ease',
@@ -114,8 +114,8 @@ export default function Settings() {
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const focusStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'rgba(125, 142, 255, 0.7)'; };
-  const blurStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'; };
+  const focusStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'var(--color-primary-500)'; };
+  const blurStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'var(--color-surface-300)'; };
 
   return (
     <div className="animate-fade-in">
@@ -125,15 +125,15 @@ export default function Settings() {
       </div>
 
       {saveSuccess && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(61, 213, 152, 0.12)', border: '1px solid rgba(61, 213, 152, 0.3)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <Check size={15} color="#4ade80" />
-          <span style={{ fontSize: '0.8125rem', color: '#86efac' }}>Profile saved successfully.</span>
+        <div className="alert alert-success" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
+          <Check size={15} color="var(--color-success-600)" />
+          <span style={{ fontSize: '0.8125rem' }}>Profile saved successfully.</span>
         </div>
       )}
       {saveError && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.3)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <AlertCircle size={15} color="#f87171" />
-          <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{saveError}</span>
+        <div className="alert alert-error" style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '1rem' }}>
+          <AlertCircle size={15} color="var(--color-danger-600)" />
+          <span style={{ fontSize: '0.8125rem' }}>{saveError}</span>
         </div>
       )}
 
@@ -236,13 +236,12 @@ export default function Settings() {
         ) : (
           /* Read-only view */
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1.25rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.07)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1.25rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--color-surface-200)' }}>
               <div style={{
-                width: '3.25rem', height: '3.25rem', borderRadius: 'var(--radius-lg)',
-                background: 'linear-gradient(135deg, #7889ff, #5365da)',
+                width: '3.25rem', height: '3.25rem', borderRadius: '2px',
+                background: 'var(--color-primary-500)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: 'white', fontSize: '1.125rem', fontWeight: 700,
-                boxShadow: '0 8px 20px -4px rgba(98, 117, 245, 0.4)',
+                color: '#fffbf5', fontSize: '1.05rem', fontWeight: 700,
                 flexShrink: 0,
               }}>
                 {(profile?.name
@@ -304,13 +303,15 @@ export default function Settings() {
           <Shield size={17} color="var(--color-primary-600)" />
           <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-surface-900)' }}>Privacy & Data Controls</h2>
         </div>
-        <div style={{ padding: '1rem 1.15rem', background: 'rgba(98, 117, 245, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(113, 134, 255, 0.28)', backdropFilter: 'blur(12px)', marginBottom: '0.875rem' }}>
-          <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.6, margin: 0 }}>
-            <strong style={{ color: '#e0e7ff' }}>What we store:</strong> Your business profile, conversation history, uploaded documents, extracted financial data, funding applications, and tasks. All data is private to your account (enforced with row-level security on every table).
+        <div className="alert alert-info" style={{ marginBottom: '0.875rem' }}>
+          <div>
+          <p style={{ fontSize: '0.8125rem', lineHeight: 1.6, margin: 0 }}>
+            <strong>What we store:</strong> Your business profile, conversation history, uploaded documents, extracted financial data, funding applications, and tasks. All data is private to your account (enforced with row-level security on every table).
           </p>
-          <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.6, marginTop: '0.5rem', marginBottom: 0 }}>
-            <strong style={{ color: '#e0e7ff' }}>What we don't do:</strong> We never share your data or use it for anything beyond powering your own UdyamAI experience. No training, no third-party sharing.
+          <p style={{ fontSize: '0.8125rem', lineHeight: 1.6, marginTop: '0.5rem', marginBottom: 0 }}>
+            <strong>What we don't do:</strong> We never share your data or use it for anything beyond powering your own UdyamAI experience. No training, no third-party sharing.
           </p>
+          </div>
         </div>
         {!confirmDelete ? (
           <button
@@ -323,8 +324,8 @@ export default function Settings() {
             Delete all my data & account
           </button>
         ) : (
-          <div style={{ padding: '1rem', background: 'rgba(247, 108, 108, 0.1)', border: '1px solid rgba(247, 108, 108, 0.28)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)' }}>
-            <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fca5a5', marginBottom: '0.5rem' }}>
+          <div className="alert alert-error">
+            <p style={{ fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
               Are you sure? This permanently deletes all your documents, financial records, applications, tasks, and chat history.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>

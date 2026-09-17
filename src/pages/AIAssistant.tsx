@@ -27,10 +27,10 @@ interface DisplayMessage {
 }
 
 const SUGGESTIONS = [
-  { text: 'Is this UPI message a scam?',         icon: ShieldCheck, color: '#55dfa5' },
-  { text: 'Find funding for my tailoring business', icon: Landmark,   color: '#fbbf24' },
-  { text: 'What is a break-even point?',          icon: Calculator,  color: '#818cf8' },
-  { text: 'How do I improve my business health?', icon: Zap,         color: '#f472b6' },
+  { text: 'Is this UPI message a scam?',         icon: ShieldCheck, color: '#245536' },
+  { text: 'Find funding for my tailoring business', icon: Landmark,   color: '#c24a1e' },
+  { text: 'What is a break-even point?',          icon: Calculator,  color: '#1e4d3a' },
+  { text: 'How do I improve my business health?', icon: Zap,         color: '#8a5a12' },
 ];
 
 /* ─── lightweight markdown renderer ─────────────────────────────── */

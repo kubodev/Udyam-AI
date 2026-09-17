@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { Message, Conversation } from '../types';
+import { getKnowledgeContext } from './knowledge';
 
 // ─── Conversation CRUD ─────────────────────────────────────────────────────
 
@@ -114,12 +115,17 @@ export async function sendChatMessage(
     return localFraudFallback(messages);
   }
 
+  // Fetch relevant knowledge-base chunks for this user message
+  const lastUserMessage = [...messages].reverse().find((m) => m.role === 'user')?.content ?? '';
+  const knowledgeContext = await getKnowledgeContext(lastUserMessage);
+
   try {
     // Build Gemini contents array
     // Gemini doesn't support a "system" role in contents — prepend context as first user turn
-    const contextPreamble = businessContext && businessContext !== '{}'
-      ? `[Business context: ${businessContext}]\n\n`
-      : '';
+    const contextPreamble =
+      (businessContext && businessContext !== '{}'
+        ? `[Business context: ${businessContext}]\n\n`
+        : '') + knowledgeContext;
 
     // Map conversation to Gemini parts format
     const geminiContents = messages.map((m) => ({

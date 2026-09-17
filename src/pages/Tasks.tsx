@@ -228,9 +228,9 @@ export default function Tasks() {
               </label>
             </div>
             {error && (
-              <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'center', padding: '0.625rem 0.875rem', background: 'rgba(247, 108, 108, 0.12)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(247, 108, 108, 0.3)', backdropFilter: 'blur(12px)' }}>
-                <AlertCircle size={14} color="#f87171" />
-                <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{error}</span>
+              <div className="alert alert-error" style={{ display: 'flex', gap: '0.625rem', alignItems: 'center' }}>
+                <AlertCircle size={14} color="var(--color-danger-600)" />
+                <span style={{ fontSize: '0.8125rem' }}>{error}</span>
               </div>
             )}
             <div style={{ display: 'flex', gap: '0.625rem' }}>

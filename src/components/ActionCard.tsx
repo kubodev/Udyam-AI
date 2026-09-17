@@ -19,13 +19,13 @@ const ICON_MAP = {
 };
 
 const COLOR_MAP: Record<ActionCardData['type'], string> = {
-  funding:    '#7c3aed',
-  calculator: '#c2410c',
-  document:   '#d97706',
-  health:     '#16a34a',
-  qr:         '#0891b2',
-  task:       '#4f46e5',
-  fraud:      '#dc2626',
+  funding:    '#1e4d3a',
+  calculator: '#c24a1e',
+  document:   '#8a5a12',
+  health:     '#245536',
+  qr:         '#1b5f6b',
+  task:       '#3a3229',
+  fraud:      '#912018',
 };
 
 export default function ActionCard({ card }: { card: ActionCardData }) {
@@ -41,26 +41,18 @@ export default function ActionCard({ card }: { card: ActionCardData }) {
         style={{
           display: 'flex', alignItems: 'center', gap: '0.75rem',
           padding: '0.65rem 0.95rem',
-          background: 'rgba(255, 255, 255, 0.04)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: 'var(--radius-md)',
+          background: 'var(--color-surface-100)',
+          border: '1px solid var(--color-surface-300)',
+          borderRadius: 'var(--radius-sm)',
           cursor: 'pointer',
-          boxShadow: '0 4px 16px -2px rgba(0, 0, 0, 0.25)',
-          transition: 'all 0.15s ease',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 8px 24px -2px rgba(0, 0, 0, 0.45)';
-          e.currentTarget.style.transform = 'translateY(-1px)';
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.07)';
-          e.currentTarget.style.borderColor = 'rgba(125, 142, 255, 0.35)';
+          e.currentTarget.style.background = 'var(--color-primary-50)';
+          e.currentTarget.style.borderColor = 'var(--color-primary-300)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = '0 4px 16px -2px rgba(0, 0, 0, 0.25)';
-          e.currentTarget.style.transform = 'none';
-          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
-          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+          e.currentTarget.style.background = 'var(--color-surface-100)';
+          e.currentTarget.style.borderColor = 'var(--color-surface-300)';
         }}
       >
         <div style={{

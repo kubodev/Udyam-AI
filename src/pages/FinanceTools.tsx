@@ -72,7 +72,7 @@ function BreakEvenCalculator({ monthlyExpenses, monthlyRevenue }: { monthlyExpen
   return (
     <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, #c2410c, #ea580c)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '2px', background: 'var(--color-accent-500)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Calculator size={17} color="white" />
         </div>
         <div>
@@ -106,8 +106,8 @@ function BreakEvenCalculator({ monthlyExpenses, monthlyRevenue }: { monthlyExpen
       )}
 
       {error && (
-        <div style={{ padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.28)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <p style={{ fontSize: '0.8125rem', color: '#fca5a5', margin: 0 }}>{error}</p>
+        <div className="alert alert-error" style={{ marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.8125rem', margin: 0 }}>{error}</p>
         </div>
       )}
 
@@ -126,10 +126,10 @@ function BreakEvenCalculator({ monthlyExpenses, monthlyRevenue }: { monthlyExpen
       </div>
 
       {result && (
-        <div style={{ marginTop: '1.25rem', padding: '1.25rem', background: 'linear-gradient(135deg, rgba(98, 117, 245, 0.12), rgba(245, 165, 36, 0.08))', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(113, 134, 255, 0.25)', backdropFilter: 'blur(12px)' }}>
+        <div style={{ marginTop: '1.25rem', padding: '1.25rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary-200)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <TrendingUp size={18} color="var(--color-primary-400)" />
-            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#fff' }}>Break-even Result</h3>
+            <TrendingUp size={18} color="var(--color-primary-600)" />
+            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-surface-900)' }}>Break-even Result</h3>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
             <div>
@@ -183,7 +183,7 @@ function ProfitMarginCalculator() {
   return (
     <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-success-600), #059669)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '2px', background: 'var(--color-success-600)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <TrendingUp size={17} color="white" />
         </div>
         <div>
@@ -254,7 +254,7 @@ function RunwayCalculator() {
   return (
     <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, #7c3aed, #6d28d9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '2px', background: 'var(--color-surface-800)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Info size={17} color="white" />
         </div>
         <div>
@@ -370,15 +370,15 @@ function FinancialRecordsSection({ userId }: { userId: string }) {
       {/* Summary row */}
       {records.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
-          <div style={{ padding: '0.875rem', background: 'rgba(61, 213, 152, 0.1)', border: '1px solid rgba(61, 213, 152, 0.25)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '0.875rem', background: '#e4efe8', border: '1px solid #b3cfc0', borderRadius: 'var(--radius-md)' }}>
             <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.25rem 0' }}>Total income</p>
             <p style={{ fontSize: '1.125rem', fontWeight: 700, color: '#6ee7b7', margin: 0 }}>{formatINR(summary.totalCredit)}</p>
           </div>
-          <div style={{ padding: '0.875rem', background: 'rgba(247, 108, 108, 0.1)', border: '1px solid rgba(247, 108, 108, 0.25)', borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '0.875rem', background: '#f8e4e0', border: '1px solid #e3b4ad', borderRadius: 'var(--radius-md)' }}>
             <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.25rem 0' }}>Total expenses</p>
             <p style={{ fontSize: '1.125rem', fontWeight: 700, color: '#ff9494', margin: 0 }}>{formatINR(summary.totalDebit)}</p>
           </div>
-          <div style={{ padding: '0.875rem', background: summary.net >= 0 ? 'rgba(61, 213, 152, 0.1)' : 'rgba(247, 108, 108, 0.1)', border: `1px solid ${summary.net >= 0 ? 'rgba(61, 213, 152, 0.25)' : 'rgba(247, 108, 108, 0.25)'}`, borderRadius: 'var(--radius-md)' }}>
+          <div style={{ padding: '0.875rem', background: summary.net >= 0 ? '#e4efe8' : '#f8e4e0', border: `1px solid ${summary.net >= 0 ? '#b3cfc0' : '#e3b4ad'}`, borderRadius: 'var(--radius-md)' }}>
             <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.25rem 0' }}>Net</p>
             <p style={{ fontSize: '1.125rem', fontWeight: 700, color: summary.net >= 0 ? '#6ee7b7' : '#ff9494', margin: 0 }}>
               {summary.net < 0 ? '−' : ''}{formatINR(summary.net)}
@@ -443,7 +443,7 @@ function FinancialRecordsSection({ userId }: { userId: string }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '20rem', overflowY: 'auto' }}>
           {records.map((r) => (
-            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255, 255, 255, 0.07)', background: 'rgba(255, 255, 255, 0.03)' }}>
+            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-surface-300)', background: 'var(--color-surface-50)' }}>
               {r.direction === 'credit'
                 ? <ArrowUpCircle size={16} color="var(--color-success-600)" />
                 : <ArrowDownCircle size={16} color="var(--color-danger-600)" />

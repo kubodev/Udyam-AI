@@ -45,7 +45,7 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
         backgroundColor: 'var(--color-sidebar-bg)',
         display: 'flex',
         flexDirection: 'column',
-        padding: '1.5rem 0 1rem',
+        padding: '1.25rem 0 1rem',
         position: 'fixed',
         top: 0,
         left: 0,
@@ -53,18 +53,18 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
         zIndex: 40,
         overflowY: 'auto',
         transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
-        transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-        boxShadow: isOpen ? '4px 0 24px rgba(0, 0, 0, 0.35)' : 'none',
+        transition: 'transform 0.22s ease',
+        borderRight: '1px solid #0e1a15',
       }}
     >
-      {/* Logo / Brand */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.75rem',
-          padding: '0 1.25rem',
-          marginBottom: '2rem',
+          padding: '0 1.1rem 1.15rem',
+          marginBottom: '0.5rem',
+          borderBottom: '1px solid rgb(255 255 255 / .08)',
         }}
       >
         <NavLink
@@ -79,13 +79,12 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
         >
           <img
             src="/logo.png"
-            alt="Udiyam AI"
+            alt="UdyamAI"
             style={{
-              height: '3.2rem',
+              height: '2.85rem',
               maxWidth: '10.5rem',
               objectFit: 'contain',
               objectPosition: 'left center',
-              filter: 'drop-shadow(0 2px 10px rgba(51, 208, 119, 0.25))',
             }}
           />
         </NavLink>
@@ -96,21 +95,20 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
             style={{
               marginLeft: 'auto',
               width: '2rem', height: '2rem',
-              borderRadius: 'var(--radius-md)',
-              background: 'rgba(255, 255, 255, 0.04)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              borderRadius: 'var(--radius-sm)',
+              background: 'transparent',
+              border: '1px solid rgb(255 255 255 / .12)',
               color: 'var(--color-sidebar-text)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer',
-              transition: 'all 0.15s ease',
               flexShrink: 0,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
-              e.currentTarget.style.color = '#fff';
+              e.currentTarget.style.background = 'var(--color-sidebar-hover)';
+              e.currentTarget.style.color = '#fffbf5';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+              e.currentTarget.style.background = 'transparent';
               e.currentTarget.style.color = 'var(--color-sidebar-text)';
             }}
           >
@@ -119,34 +117,32 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
         )}
       </div>
 
-      {/* Navigation */}
-      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.3rem', padding: '0 .8rem' }}>
+      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.15rem', padding: '0 .75rem' }}>
         {navItems.map((item) => (
           <div key={item.to}>
-          {item.group && <p style={{ fontSize: '.64rem', fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-sidebar-text)', margin: item.to === '/' ? '0 .7rem .5rem' : '1.25rem .7rem .5rem' }}>{item.group}</p>}
+          {item.group && <p style={{ fontSize: '.64rem', fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--color-sidebar-text)', margin: item.to === '/' ? '0 .55rem .45rem' : '1.15rem .55rem .45rem' }}>{item.group}</p>}
           <NavLink
             to={item.to}
             end={item.to === '/'}
             style={({ isActive }) => ({
               display: 'flex',
               alignItems: 'center',
-              gap: '0.75rem',
-              padding: '0.7rem 0.8rem',
-              borderRadius: 'var(--radius-md)',
+              gap: '0.7rem',
+              padding: '0.55rem 0.7rem',
+              borderRadius: 'var(--radius-sm)',
               fontSize: '0.875rem',
-              fontWeight: isActive ? 600 : 400,
+              fontWeight: isActive ? 700 : 500,
               color: isActive ? 'var(--color-sidebar-text-active)' : 'var(--color-sidebar-text)',
               backgroundColor: isActive ? 'var(--color-sidebar-active)' : 'transparent',
-              border: isActive ? '1px solid rgb(127 145 255 / .16)' : '1px solid transparent',
+              border: '1px solid transparent',
               textDecoration: 'none',
-              transition: 'all 0.15s ease',
               cursor: 'pointer',
             })}
             onMouseEnter={(e) => {
               const target = e.currentTarget;
               if (!target.classList.contains('active')) {
                 target.style.backgroundColor = 'var(--color-sidebar-hover)';
-                target.style.color = 'var(--color-sidebar-text-active)';
+                target.style.color = '#fffbf5';
               }
             }}
             onMouseLeave={(e) => {
@@ -157,18 +153,17 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
               }
             }}
           >
-            <item.icon size={18} />
+            <item.icon size={17} />
             <span>{item.label}</span>
           </NavLink>
           </div>
         ))}
       </nav>
 
-      {/* Footer */}
       <div
         style={{
-          padding: '1rem 1.35rem',
-          borderTop: '1px solid var(--color-surface-200)',
+          padding: '1rem 1.2rem',
+          borderTop: '1px solid rgb(255 255 255 / .08)',
           marginTop: 'auto',
         }}
       >
@@ -176,7 +171,10 @@ export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
           style={{
             fontSize: '0.6875rem',
             color: 'var(--color-sidebar-text)',
-            textAlign: 'center',
+            textAlign: 'left',
+            letterSpacing: '.04em',
+            textTransform: 'uppercase',
+            fontWeight: 700,
           }}
         >
           Your business, in focus

@@ -29,7 +29,7 @@ export default function Login() {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
-      background: 'linear-gradient(135deg, #0b1020 0%, #10172a 60%, #0b0f19 100%)',
+      background: 'var(--color-surface-50)',
     }}>
       {/* Left — Branding */}
       <div style={{
@@ -39,6 +39,8 @@ export default function Login() {
         justifyContent: 'center',
         padding: '3rem',
         maxWidth: '36rem',
+        background: 'var(--color-sidebar-bg)',
+        color: '#f3ede3',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
           <img
@@ -48,28 +50,27 @@ export default function Login() {
               height: '3.6rem',
               width: 'auto',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 4px 16px rgba(51, 208, 119, 0.25))',
             }}
           />
         </div>
 
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
-          Your AI-powered<br />business companion
+        <h1 style={{ fontSize: '2.4rem', fontWeight: 650, color: '#f3ede3', lineHeight: 1.12, marginBottom: '1rem', letterSpacing: '-0.03em', fontFamily: 'var(--font-display)' }}>
+          Your business companion<br />for the workbench
         </h1>
-        <p style={{ fontSize: '1rem', color: 'var(--color-surface-400)', lineHeight: 1.7, marginBottom: '2.5rem' }}>
+        <p style={{ fontSize: '1rem', color: '#b7c4bc', lineHeight: 1.7, marginBottom: '2.5rem' }}>
           Designed for Indian micro-entrepreneurs. Get fraud protection, discover funding, manage finances — with AI that understands your business.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {[
-            { icon: '🛡️', text: 'AI-powered fraud & scam protection' },
-            { icon: '💰', text: 'Verified funding & grant discovery' },
-            { icon: '📊', text: 'Business health & readiness analysis' },
-            { icon: '📄', text: 'Application drafting from your real data' },
+            { n: '01', text: 'Fraud & scam checks before you pay' },
+            { n: '02', text: 'Verified funding & grant discovery' },
+            { n: '03', text: 'Business health from your actual records' },
+            { n: '04', text: 'Application drafts from your real data' },
           ].map((item) => (
             <div key={item.text} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <span style={{ fontSize: '1.125rem' }}>{item.icon}</span>
-              <span style={{ fontSize: '0.875rem', color: 'var(--color-surface-300)' }}>{item.text}</span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '.08em', color: 'var(--color-accent-500)', fontFamily: 'var(--font-mono)' }}>{item.n}</span>
+              <span style={{ fontSize: '0.9rem', color: '#e8dfd2' }}>{item.text}</span>
             </div>
           ))}
         </div>
@@ -86,11 +87,11 @@ export default function Login() {
         <div style={{
           width: '100%',
           maxWidth: '26rem',
-          background: 'linear-gradient(145deg, #182030, #111827)',
+          background: 'var(--color-surface-100)',
           border: '1px solid var(--color-surface-300)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '2.5rem',
-          boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.4)',
+          borderRadius: 'var(--radius-md)',
+          padding: '2.25rem',
+          boxShadow: 'var(--shadow-lg)',
         }}>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-surface-900)', marginBottom: '0.5rem' }}>
             Welcome back

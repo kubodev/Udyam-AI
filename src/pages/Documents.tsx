@@ -133,24 +133,21 @@ export default function Documents() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '0.5rem',
                   padding: '0.58rem 0.95rem',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: 'var(--radius-md)',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
+                  border: '1px solid var(--color-surface-300)',
+                  borderRadius: 'var(--radius-sm)',
+                  background: 'var(--color-surface-100)',
                   fontSize: '0.8125rem',
                   fontWeight: 500,
                   cursor: 'pointer',
                   color: 'var(--color-surface-800)',
-                  transition: 'all 0.15s ease',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
-                  e.currentTarget.style.borderColor = 'rgba(125, 142, 255, 0.35)';
+                  e.currentTarget.style.background = 'var(--color-surface-50)';
+                  e.currentTarget.style.borderColor = 'var(--color-surface-400)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                  e.currentTarget.style.background = 'var(--color-surface-100)';
+                  e.currentTarget.style.borderColor = 'var(--color-surface-300)';
                 }}
               >
                 <span>{selectedTypeLabel}</span>
@@ -159,12 +156,10 @@ export default function Documents() {
               {showTypeDropdown && (
                 <div style={{
                   position: 'absolute', top: '115%', right: 0, zIndex: 50,
-                  background: 'rgba(15, 22, 38, 0.96)',
-                  backdropFilter: 'blur(16px)',
-                  WebkitBackdropFilter: 'blur(16px)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  borderRadius: 'var(--radius-lg)',
-                  boxShadow: '0 18px 40px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                  background: 'var(--color-surface-100)',
+                  border: '1px solid var(--color-surface-300)',
+                  borderRadius: 'var(--radius-md)',
+                  boxShadow: 'var(--shadow-lg)',
                   minWidth: '15rem', padding: '0.4rem',
                   overflow: 'hidden',
                 }}>
@@ -178,17 +173,17 @@ export default function Documents() {
                           display: 'flex', alignItems: 'center', width: '100%', textAlign: 'left',
                           padding: '0.6rem 0.85rem', fontSize: '0.8125rem',
                           borderRadius: 'var(--radius-md)',
-                          background: isSelected ? 'rgba(98, 117, 245, 0.2)' : 'transparent',
-                          color: isSelected ? '#c7d2fe' : 'var(--color-surface-700)',
+                          background: isSelected ? 'var(--color-primary-50)' : 'transparent',
+                          color: isSelected ? 'var(--color-primary-700)' : 'var(--color-surface-700)',
                           fontWeight: isSelected ? 600 : 400,
-                          border: isSelected ? '1px solid rgba(113, 134, 255, 0.25)' : '1px solid transparent',
+                          border: isSelected ? '1px solid var(--color-primary-200)' : '1px solid transparent',
                           cursor: 'pointer',
                           transition: 'all 0.12s ease',
                         }}
                         onMouseEnter={(e) => {
                           if (!isSelected) {
-                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
-                            e.currentTarget.style.color = '#fff';
+                            e.currentTarget.style.background = 'var(--color-surface-50)';
+                            e.currentTarget.style.color = 'var(--color-surface-900)';
                           }
                         }}
                         onMouseLeave={(e) => {
@@ -231,30 +226,22 @@ export default function Documents() {
       </div>
 
       {error && (
-        <div style={{
+        <div className="alert alert-error" style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: '0.5rem', padding: '0.75rem 1rem',
-          background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.3)',
-          backdropFilter: 'blur(12px)',
-          borderRadius: 'var(--radius-md)', marginBottom: '1rem',
+          gap: '0.5rem', marginBottom: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertCircle size={15} color="#f87171" />
-            <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{error}</span>
+            <AlertCircle size={15} color="var(--color-danger-600)" />
+            <span style={{ fontSize: '0.8125rem' }}>{error}</span>
           </div>
           <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem' }}>
-            <X size={15} color="#fca5a5" />
+            <X size={15} color="var(--color-danger-600)" />
           </button>
         </div>
       )}
 
       {/* Info banner */}
-      <div style={{
-        padding: '0.875rem 1.15rem', marginBottom: '1.25rem',
-        background: 'rgba(98, 117, 245, 0.1)', border: '1px solid rgba(113, 134, 255, 0.28)',
-        backdropFilter: 'blur(12px)',
-        borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.5,
-      }}>
+      <div className="alert alert-info" style={{ marginBottom: '1.25rem' }}>
         📄 Supported formats: PDF, PNG, JPG, WebP — max 10 MB per file.
         Files are stored securely in Supabase Storage. Extraction runs automatically after upload.
       </div>
@@ -342,8 +329,8 @@ export default function Documents() {
                         onClick={() => handleView(doc)}
                         style={{
                           padding: '0.4rem', borderRadius: 'var(--radius-sm)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          background: 'rgba(255, 255, 255, 0.05)', cursor: 'pointer', display: 'flex',
+                          border: '1px solid var(--color-surface-300)',
+                          background: 'var(--color-surface-50)', cursor: 'pointer', display: 'flex',
                           color: 'var(--color-surface-400)',
                         }}
                       >
@@ -355,8 +342,8 @@ export default function Documents() {
                       onClick={() => handleExpand(doc)}
                       style={{
                         padding: '0.4rem', borderRadius: 'var(--radius-sm)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        background: 'rgba(255, 255, 255, 0.05)', cursor: 'pointer', display: 'flex',
+                        border: '1px solid var(--color-surface-300)',
+                        background: 'var(--color-surface-50)', cursor: 'pointer', display: 'flex',
                         color: 'var(--color-surface-400)',
                       }}
                     >
@@ -368,8 +355,8 @@ export default function Documents() {
                       onClick={() => handleDelete(doc)}
                       style={{
                         padding: '0.4rem', borderRadius: 'var(--radius-sm)',
-                        border: '1px solid rgba(247, 108, 108, 0.25)',
-                        background: 'rgba(247, 108, 108, 0.12)', cursor: 'pointer', display: 'flex',
+                        border: '1px solid #e3b4ad',
+                        background: '#f8e4e0', cursor: 'pointer', display: 'flex',
                         color: 'var(--color-danger-600)',
                       }}
                     >
@@ -383,7 +370,7 @@ export default function Documents() {
 
                 {/* Extraction Preview Panel */}
                 {isExpanded && (
-                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '1rem 1.25rem', background: 'rgba(11, 15, 25, 0.65)' }}>
+                  <div style={{ borderTop: '1px solid var(--color-surface-200)', padding: '1rem 1.25rem', background: 'var(--color-surface-50)' }}>
                     {isLoadingExt ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-surface-400)', fontSize: '0.8125rem' }}>
                         <RefreshCw size={13} style={{ animation: 'spin 1s linear infinite' }} /> Loading extracted data…

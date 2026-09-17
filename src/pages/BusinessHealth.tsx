@@ -16,9 +16,9 @@ function statusIcon(status: HealthCheck['status']) {
 }
 
 function statusBg(status: HealthCheck['status']) {
-  if (status === 'healthy') return { bg: 'rgba(61, 213, 152, 0.08)', border: 'rgba(61, 213, 152, 0.24)' };
-  if (status === 'needs_attention') return { bg: 'rgba(245, 165, 36, 0.08)', border: 'rgba(245, 165, 36, 0.24)' };
-  return { bg: 'rgba(247, 108, 108, 0.08)', border: 'rgba(247, 108, 108, 0.24)' };
+  if (status === 'healthy') return { bg: '#e4efe8', border: '#b3cfc0' };
+  if (status === 'needs_attention') return { bg: '#f8ead3', border: '#e4c48a' };
+  return { bg: '#f8e4e0', border: '#e3b4ad' };
 }
 
 export default function BusinessHealth() {
@@ -118,8 +118,8 @@ export default function BusinessHealth() {
       <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{
           width: '3.5rem', height: '3.5rem', borderRadius: '50%',
-          background: overallStatus === 'healthy' ? 'rgba(61, 213, 152, 0.14)' : overallStatus === 'needs_attention' ? 'rgba(245, 165, 36, 0.14)' : 'rgba(247, 108, 108, 0.14)',
-          border: `1px solid ${overallStatus === 'healthy' ? 'rgba(61, 213, 152, 0.28)' : overallStatus === 'needs_attention' ? 'rgba(245, 165, 36, 0.28)' : 'rgba(247, 108, 108, 0.28)'}`,
+          background: overallStatus === 'healthy' ? '#e4efe8' : overallStatus === 'needs_attention' ? '#f8ead3' : '#f8e4e0',
+          border: `1px solid ${overallStatus === 'healthy' ? '#b3cfc0' : overallStatus === 'needs_attention' ? '#e4c48a' : '#e3b4ad'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
           <HeartPulse size={22} color={overallStatus === 'healthy' ? 'var(--color-success-600)' : overallStatus === 'needs_attention' ? 'var(--color-accent-600)' : 'var(--color-danger-600)'} />
@@ -143,7 +143,7 @@ export default function BusinessHealth() {
         {checks.map((check) => {
           const { bg, border } = statusBg(check.status);
           return (
-            <div key={check.label} style={{ background: bg, border: `1px solid ${border}`, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
+            <div key={check.label} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 'var(--radius-md)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
               <div style={{ marginTop: '1px', flexShrink: 0 }}>{statusIcon(check.status)}</div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-surface-900)', marginBottom: '0.25rem' }}>{check.label}</p>
