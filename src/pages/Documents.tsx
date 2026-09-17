@@ -131,39 +131,77 @@ export default function Documents() {
               <button
                 onClick={() => setShowTypeDropdown((v) => !v)}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: '0.375rem',
-                  padding: '0.5rem 0.75rem',
-                  border: '1px solid var(--color-surface-300)',
+                  display: 'flex', alignItems: 'center', gap: '0.5rem',
+                  padding: '0.58rem 0.95rem',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
                   borderRadius: 'var(--radius-md)',
-                  background: 'white', fontSize: '0.8125rem',
-                  cursor: 'pointer', color: 'var(--color-surface-700)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  fontSize: '0.8125rem',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  color: 'var(--color-surface-800)',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
+                  e.currentTarget.style.borderColor = 'rgba(125, 142, 255, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
                 }}
               >
-                {selectedTypeLabel}
-                <ChevronDown size={14} />
+                <span>{selectedTypeLabel}</span>
+                <ChevronDown size={14} color="var(--color-surface-400)" />
               </button>
               {showTypeDropdown && (
                 <div style={{
-                  position: 'absolute', top: '110%', right: 0, zIndex: 50,
-                  background: 'white', border: '1px solid var(--color-surface-200)',
-                  borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-lg)',
-                  minWidth: '14rem', padding: '0.375rem 0',
+                  position: 'absolute', top: '115%', right: 0, zIndex: 50,
+                  background: 'rgba(15, 22, 38, 0.96)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(255, 255, 255, 0.12)',
+                  borderRadius: 'var(--radius-lg)',
+                  boxShadow: '0 18px 40px -5px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                  minWidth: '15rem', padding: '0.4rem',
+                  overflow: 'hidden',
                 }}>
-                  {DOC_TYPES.map((t) => (
-                    <button
-                      key={t.value}
-                      onClick={() => { setUploadType(t.value); setShowTypeDropdown(false); }}
-                      style={{
-                        display: 'block', width: '100%', textAlign: 'left',
-                        padding: '0.5rem 1rem', fontSize: '0.8125rem',
-                        background: uploadType === t.value ? 'var(--color-primary-50)' : 'transparent',
-                        color: uploadType === t.value ? 'var(--color-primary-700)' : 'var(--color-surface-700)',
-                        border: 'none', cursor: 'pointer',
-                      }}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
+                  {DOC_TYPES.map((t) => {
+                    const isSelected = uploadType === t.value;
+                    return (
+                      <button
+                        key={t.value}
+                        onClick={() => { setUploadType(t.value); setShowTypeDropdown(false); }}
+                        style={{
+                          display: 'flex', alignItems: 'center', width: '100%', textAlign: 'left',
+                          padding: '0.6rem 0.85rem', fontSize: '0.8125rem',
+                          borderRadius: 'var(--radius-md)',
+                          background: isSelected ? 'rgba(98, 117, 245, 0.2)' : 'transparent',
+                          color: isSelected ? '#c7d2fe' : 'var(--color-surface-700)',
+                          fontWeight: isSelected ? 600 : 400,
+                          border: isSelected ? '1px solid rgba(113, 134, 255, 0.25)' : '1px solid transparent',
+                          cursor: 'pointer',
+                          transition: 'all 0.12s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.06)';
+                            e.currentTarget.style.color = '#fff';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.color = 'var(--color-surface-700)';
+                          }
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -303,38 +341,41 @@ export default function Documents() {
                         title="View file"
                         onClick={() => handleView(doc)}
                         style={{
-                          padding: '0.375rem', borderRadius: 'var(--radius-sm)',
-                          border: '1px solid var(--color-surface-200)',
-                          background: 'white', cursor: 'pointer', display: 'flex',
+                          padding: '0.4rem', borderRadius: 'var(--radius-sm)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          background: 'rgba(255, 255, 255, 0.05)', cursor: 'pointer', display: 'flex',
+                          color: 'var(--color-surface-400)',
                         }}
                       >
-                        <Eye size={15} color="var(--color-surface-500)" />
+                        <Eye size={15} />
                       </button>
                     )}
                     <button
                       title={isExpanded ? 'Collapse' : 'Expand'}
                       onClick={() => handleExpand(doc)}
                       style={{
-                        padding: '0.375rem', borderRadius: 'var(--radius-sm)',
-                        border: '1px solid var(--color-surface-200)',
-                        background: 'white', cursor: 'pointer', display: 'flex',
+                        padding: '0.4rem', borderRadius: 'var(--radius-sm)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        background: 'rgba(255, 255, 255, 0.05)', cursor: 'pointer', display: 'flex',
+                        color: 'var(--color-surface-400)',
                       }}
                     >
-                      {isExpanded ? <ChevronUp size={15} color="var(--color-surface-500)" /> : <ChevronDown size={15} color="var(--color-surface-500)" />}
+                      {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                     </button>
                     <button
                       title="Delete"
                       disabled={deletingId === doc.id}
                       onClick={() => handleDelete(doc)}
                       style={{
-                        padding: '0.375rem', borderRadius: 'var(--radius-sm)',
-                        border: '1px solid #fecaca',
-                        background: '#fff5f5', cursor: 'pointer', display: 'flex',
+                        padding: '0.4rem', borderRadius: 'var(--radius-sm)',
+                        border: '1px solid rgba(247, 108, 108, 0.25)',
+                        background: 'rgba(247, 108, 108, 0.12)', cursor: 'pointer', display: 'flex',
+                        color: 'var(--color-danger-600)',
                       }}
                     >
                       {deletingId === doc.id
-                        ? <RefreshCw size={15} color="var(--color-danger-600)" style={{ animation: 'spin 1s linear infinite' }} />
-                        : <Trash2 size={15} color="var(--color-danger-600)" />
+                        ? <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} />
+                        : <Trash2 size={15} />
                       }
                     </button>
                   </div>
@@ -342,7 +383,7 @@ export default function Documents() {
 
                 {/* Extraction Preview Panel */}
                 {isExpanded && (
-                  <div style={{ borderTop: '1px solid var(--color-surface-100)', padding: '1rem 1.25rem', background: 'var(--color-surface-50)' }}>
+                  <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', padding: '1rem 1.25rem', background: 'rgba(11, 15, 25, 0.65)' }}>
                     {isLoadingExt ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-surface-400)', fontSize: '0.8125rem' }}>
                         <RefreshCw size={13} style={{ animation: 'spin 1s linear infinite' }} /> Loading extracted data…

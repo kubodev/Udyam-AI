@@ -7,9 +7,12 @@ import { supabase } from '../lib/supabase';
 import type { BusinessProfile } from '../types';
 
 const inputStyle = {
-  width: '100%', padding: '0.5rem 0.75rem',
-  border: '1px solid var(--color-surface-300)',
+  width: '100%', padding: '0.55rem 0.8rem',
+  background: 'rgba(255, 255, 255, 0.04)',
+  border: '1px solid rgba(255, 255, 255, 0.12)',
+  color: 'var(--color-surface-800)',
   borderRadius: 'var(--radius-md)', fontSize: '0.875rem', outline: 'none',
+  transition: 'border-color 0.15s ease',
 };
 
 const SECTORS = ['Retail', 'Food & Beverage', 'Textile & Garments', 'Manufacturing', 'Services', 'Technology', 'Agriculture', 'Healthcare', 'Education', 'Other'];
@@ -111,8 +114,8 @@ export default function Settings() {
     setTimeout(() => setSaveSuccess(false), 3000);
   };
 
-  const focusStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'var(--color-primary-500)'; };
-  const blurStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'var(--color-surface-300)'; };
+  const focusStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'rgba(125, 142, 255, 0.7)'; };
+  const blurStyle = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => { e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'; };
 
   return (
     <div className="animate-fade-in">
@@ -232,28 +235,53 @@ export default function Settings() {
           </div>
         ) : (
           /* Read-only view */
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 2rem' }}>
-            {[
-              ['Name', profile?.name],
-              ['Business', profile?.business_name],
-              ['Sector', profile?.sector],
-              ['Stage', profile?.business_stage],
-              ['Location', profile?.location && profile?.state ? `${profile.location}, ${profile.state}` : profile?.location ?? profile?.state],
-              ['Monthly revenue', profile?.monthly_revenue ? `₹${profile.monthly_revenue.toLocaleString('en-IN')}` : null],
-              ['Monthly expenses', profile?.monthly_expenses ? `₹${profile.monthly_expenses.toLocaleString('en-IN')}` : null],
-              ['UPI ID', profile?.upi_id],
-              ['GST', profile?.gst_status],
-              ['Udyam', profile?.udyam_status],
-              ['Funding need', profile?.funding_requirement ? `₹${profile.funding_requirement.toLocaleString('en-IN')}` : null],
-              ['Email', user?.email],
-            ].map(([label, value]) => (
-              <div key={label as string}>
-                <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', marginBottom: '0.125rem' }}>{label}</p>
-                <p style={{ fontSize: '0.875rem', color: value ? 'var(--color-surface-900)' : 'var(--color-surface-300)', fontWeight: value ? 500 : 400 }}>
-                  {value ?? '—'}
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '1.25rem', marginBottom: '1.25rem', borderBottom: '1px solid rgba(255, 255, 255, 0.07)' }}>
+              <div style={{
+                width: '3.25rem', height: '3.25rem', borderRadius: 'var(--radius-lg)',
+                background: 'linear-gradient(135deg, #7889ff, #5365da)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'white', fontSize: '1.125rem', fontWeight: 700,
+                boxShadow: '0 8px 20px -4px rgba(98, 117, 245, 0.4)',
+                flexShrink: 0,
+              }}>
+                {(profile?.name
+                  ? profile.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+                  : profile?.business_name?.[0]?.toUpperCase() ?? 'U')}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-surface-900)', margin: '0 0 0.2rem 0' }}>
+                  {profile?.name || 'Business Owner'}
+                </h3>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-400)', margin: 0 }}>
+                  {profile?.business_name ? `${profile.business_name}${profile.sector ? ` · ${profile.sector}` : ''}` : (user?.email ?? 'UdyamAI Account')}
                 </p>
               </div>
-            ))}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 2rem' }}>
+              {[
+                ['Name', profile?.name],
+                ['Business', profile?.business_name],
+                ['Sector', profile?.sector],
+                ['Stage', profile?.business_stage],
+                ['Location', profile?.location && profile?.state ? `${profile.location}, ${profile.state}` : profile?.location ?? profile?.state],
+                ['Monthly revenue', profile?.monthly_revenue ? `₹${profile.monthly_revenue.toLocaleString('en-IN')}` : null],
+                ['Monthly expenses', profile?.monthly_expenses ? `₹${profile.monthly_expenses.toLocaleString('en-IN')}` : null],
+                ['UPI ID', profile?.upi_id],
+                ['GST', profile?.gst_status],
+                ['Udyam', profile?.udyam_status],
+                ['Funding need', profile?.funding_requirement ? `₹${profile.funding_requirement.toLocaleString('en-IN')}` : null],
+                ['Email', user?.email],
+              ].map(([label, value]) => (
+                <div key={label as string}>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', marginBottom: '0.125rem' }}>{label}</p>
+                  <p style={{ fontSize: '0.875rem', color: value ? 'var(--color-surface-900)' : 'var(--color-surface-300)', fontWeight: value ? 500 : 400 }}>
+                    {value ?? '—'}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -288,15 +316,15 @@ export default function Settings() {
           <button
             id="delete-data-btn"
             className="btn btn-secondary"
-            style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)', borderColor: '#fecaca' }}
+            style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)', borderColor: 'rgba(247, 108, 108, 0.3)' }}
             onClick={() => setConfirmDelete(true)}
           >
             <Trash2 size={14} />
             Delete all my data & account
           </button>
         ) : (
-          <div style={{ padding: '0.875rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)' }}>
-            <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-danger-700)', marginBottom: '0.5rem' }}>
+          <div style={{ padding: '1rem', background: 'rgba(247, 108, 108, 0.1)', border: '1px solid rgba(247, 108, 108, 0.28)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)' }}>
+            <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fca5a5', marginBottom: '0.5rem' }}>
               Are you sure? This permanently deletes all your documents, financial records, applications, tasks, and chat history.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -333,7 +361,7 @@ export default function Settings() {
         <button
           id="sign-out-btn"
           className="btn btn-secondary"
-          style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)', borderColor: '#fecaca' }}
+          style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)', borderColor: 'rgba(247, 108, 108, 0.3)' }}
           onClick={signOut}
         >
           Sign out

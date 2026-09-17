@@ -17,20 +17,7 @@ import Applications from './pages/Applications';
 import Tasks from './pages/Tasks';
 import Settings from './pages/Settings';
 import CreateQR from './pages/CreateQR';
-
-/** Shows a full-page spinner while auth/profile is loading */
-function LoadingScreen() {
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-surface-50)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-        <div className="animate-pulse-subtle" style={{ width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: '1.25rem' }}>✦</span>
-        </div>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-400)' }}>Loading UdyamAI…</p>
-      </div>
-    </div>
-  );
-}
+import LoadingScreen from './components/LoadingScreen';
 
 /** Route guard — redirects unauthenticated users and handles onboarding */
 function ProtectedRoutes() {

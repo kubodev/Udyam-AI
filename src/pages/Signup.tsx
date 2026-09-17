@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Sparkles, Mail, Lock, AlertCircle, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Signup() {
@@ -40,11 +40,17 @@ export default function Signup() {
     }}>
       {/* Left — Branding */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3rem', maxWidth: '36rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '3rem' }}>
-          <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: 'var(--radius-lg)', background: 'linear-gradient(135deg, var(--color-primary-400), var(--color-accent-400))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Sparkles size={20} color="white" />
-          </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>UdyamAI</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2.5rem' }}>
+          <img
+            src="/logo.png"
+            alt="Udiyam AI"
+            style={{
+              height: '3.6rem',
+              width: 'auto',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 4px 16px rgba(51, 208, 119, 0.25))',
+            }}
+          />
         </div>
         <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
           Start your free<br />business account

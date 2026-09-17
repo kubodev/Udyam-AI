@@ -106,8 +106,8 @@ function BreakEvenCalculator({ monthlyExpenses, monthlyRevenue }: { monthlyExpen
       )}
 
       {error && (
-        <div style={{ padding: '0.75rem 1rem', background: '#fee2e2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)' }}>{error}</p>
+        <div style={{ padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.28)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
+          <p style={{ fontSize: '0.8125rem', color: '#fca5a5', margin: 0 }}>{error}</p>
         </div>
       )}
 
@@ -126,10 +126,10 @@ function BreakEvenCalculator({ monthlyExpenses, monthlyRevenue }: { monthlyExpen
       </div>
 
       {result && (
-        <div style={{ marginTop: '1.25rem', padding: '1.25rem', background: 'linear-gradient(135deg, var(--color-primary-50), #fff7ed)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-primary-200)' }}>
+        <div style={{ marginTop: '1.25rem', padding: '1.25rem', background: 'linear-gradient(135deg, rgba(98, 117, 245, 0.12), rgba(245, 165, 36, 0.08))', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(113, 134, 255, 0.25)', backdropFilter: 'blur(12px)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-            <TrendingUp size={18} color="var(--color-primary-600)" />
-            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-primary-900)' }}>Break-even Result</h3>
+            <TrendingUp size={18} color="var(--color-primary-400)" />
+            <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#fff' }}>Break-even Result</h3>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
             <div>
@@ -370,17 +370,17 @@ function FinancialRecordsSection({ userId }: { userId: string }) {
       {/* Summary row */}
       {records.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.25rem' }}>
-          <div style={{ padding: '0.875rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--radius-md)' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)' }}>Total income</p>
-            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-success-600)' }}>{formatINR(summary.totalCredit)}</p>
+          <div style={{ padding: '0.875rem', background: 'rgba(61, 213, 152, 0.1)', border: '1px solid rgba(61, 213, 152, 0.25)', borderRadius: 'var(--radius-md)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.25rem 0' }}>Total income</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: '#6ee7b7', margin: 0 }}>{formatINR(summary.totalCredit)}</p>
           </div>
-          <div style={{ padding: '0.875rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)' }}>Total expenses</p>
-            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-danger-600)' }}>{formatINR(summary.totalDebit)}</p>
+          <div style={{ padding: '0.875rem', background: 'rgba(247, 108, 108, 0.1)', border: '1px solid rgba(247, 108, 108, 0.25)', borderRadius: 'var(--radius-md)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.25rem 0' }}>Total expenses</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: '#ff9494', margin: 0 }}>{formatINR(summary.totalDebit)}</p>
           </div>
-          <div style={{ padding: '0.875rem', background: summary.net >= 0 ? '#f0fdf4' : '#fef2f2', border: `1px solid ${summary.net >= 0 ? '#bbf7d0' : '#fecaca'}`, borderRadius: 'var(--radius-md)' }}>
-            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)' }}>Net</p>
-            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: summary.net >= 0 ? 'var(--color-success-600)' : 'var(--color-danger-600)' }}>
+          <div style={{ padding: '0.875rem', background: summary.net >= 0 ? 'rgba(61, 213, 152, 0.1)' : 'rgba(247, 108, 108, 0.1)', border: `1px solid ${summary.net >= 0 ? 'rgba(61, 213, 152, 0.25)' : 'rgba(247, 108, 108, 0.25)'}`, borderRadius: 'var(--radius-md)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.25rem 0' }}>Net</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: summary.net >= 0 ? '#6ee7b7' : '#ff9494', margin: 0 }}>
               {summary.net < 0 ? '−' : ''}{formatINR(summary.net)}
             </p>
           </div>
@@ -443,7 +443,7 @@ function FinancialRecordsSection({ userId }: { userId: string }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '20rem', overflowY: 'auto' }}>
           {records.map((r) => (
-            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-surface-150)', background: 'white' }}>
+            <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.625rem 0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid rgba(255, 255, 255, 0.07)', background: 'rgba(255, 255, 255, 0.03)' }}>
               {r.direction === 'credit'
                 ? <ArrowUpCircle size={16} color="var(--color-success-600)" />
                 : <ArrowDownCircle size={16} color="var(--color-danger-600)" />

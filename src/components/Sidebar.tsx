@@ -9,7 +9,7 @@ import {
   ClipboardList,
   ListChecks,
   Settings,
-  Sparkles,
+  PanelLeftClose,
 } from 'lucide-react';
 
 interface NavItem {
@@ -17,6 +17,11 @@ interface NavItem {
   label: string;
   icon: React.ComponentType<{ size?: number }>;
   group?: string;
+}
+
+interface SidebarProps {
+  isOpen?: boolean;
+  onToggle?: () => void;
 }
 
 const navItems: NavItem[] = [
@@ -31,7 +36,7 @@ const navItems: NavItem[] = [
   { to: '/settings',     label: 'Settings',         icon: Settings, group: 'Account' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = true, onToggle }: SidebarProps) {
   return (
     <aside
       style={{
@@ -47,6 +52,9 @@ export default function Sidebar() {
         bottom: 0,
         zIndex: 40,
         overflowY: 'auto',
+        transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+        boxShadow: isOpen ? '4px 0 24px rgba(0, 0, 0, 0.35)' : 'none',
       }}
     >
       {/* Logo / Brand */}
@@ -54,46 +62,61 @@ export default function Sidebar() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '0.625rem',
-          padding: '0 1.35rem',
-          marginBottom: '2.5rem',
+          gap: '0.75rem',
+          padding: '0 1.25rem',
+          marginBottom: '2rem',
         }}
       >
-        <div
+        <NavLink
+          to="/"
           style={{
-            width: '2.4rem', height: '2.4rem', borderRadius: '.8rem',
-            background: 'linear-gradient(135deg, #8495ff, #5668dc)',
-            boxShadow: '0 8px 20px rgb(86 104 220 / .3)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            textDecoration: 'none',
+            flex: 1,
+            minWidth: 0,
           }}
         >
-          <Sparkles size={16} color="white" />
-        </div>
-        <div>
-          <h1
+          <img
+            src="/logo.png"
+            alt="Udiyam AI"
             style={{
-              fontSize: '1.2rem',
-              fontWeight: 700,
-              color: 'white',
-              lineHeight: 1.2,
-              letterSpacing: '-0.01em',
+              height: '3.2rem',
+              maxWidth: '10.5rem',
+              objectFit: 'contain',
+              objectPosition: 'left center',
+              filter: 'drop-shadow(0 2px 10px rgba(51, 208, 119, 0.25))',
             }}
-          >
-            UdyamAI
-          </h1>
-          <span
+          />
+        </NavLink>
+        {onToggle && (
+          <button
+            onClick={onToggle}
+            title="Hide sidebar (Cmd/Ctrl + B)"
             style={{
-              fontSize: '0.625rem',
+              marginLeft: 'auto',
+              width: '2rem', height: '2rem',
+              borderRadius: 'var(--radius-md)',
+              background: 'rgba(255, 255, 255, 0.04)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               color: 'var(--color-sidebar-text)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.09)';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+              e.currentTarget.style.color = 'var(--color-sidebar-text)';
             }}
           >
-            Business Companion
-          </span>
-        </div>
+            <PanelLeftClose size={16} />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}

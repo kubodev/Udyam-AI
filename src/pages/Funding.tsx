@@ -79,9 +79,16 @@ export default function Funding() {
       </div>
 
       {/* Notice */}
-      <div style={{ padding: '0.75rem 1rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary-200)', marginBottom: '1.25rem' }}>
-        <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)' }}>
-          📋 Showing <strong>{filtered.length}</strong> manually verified opportunities. Source URLs and verification dates shown on each card. Funding facts come from structured data — not AI generation.
+      <div style={{
+        padding: '0.85rem 1.15rem',
+        background: 'rgba(98, 117, 245, 0.1)',
+        borderRadius: 'var(--radius-md)',
+        border: '1px solid rgba(113, 134, 255, 0.28)',
+        backdropFilter: 'blur(12px)',
+        marginBottom: '1.25rem',
+      }}>
+        <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.5, margin: 0 }}>
+          📋 Showing <strong style={{ color: '#ffffff' }}>{filtered.length}</strong> manually verified opportunities. Source URLs and verification dates shown on each card. Funding facts come from structured data — not AI generation.
         </p>
       </div>
 

@@ -14,13 +14,36 @@ export async function getOrCreateConversation(userId: string): Promise<Conversat
 
   if (existing) return existing as Conversation;
 
-  const { data: created } = await supabase
+  return createConversation(userId);
+}
+
+export async function listConversations(userId: string): Promise<Conversation[]> {
+  const { data } = await supabase
     .from('conversations')
-    .insert({ user_id: userId, title: 'New conversation' })
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  return (data ?? []) as Conversation[];
+}
+
+export async function createConversation(userId: string, title = 'New conversation'): Promise<Conversation | null> {
+  const { data } = await supabase
+    .from('conversations')
+    .insert({ user_id: userId, title })
     .select()
     .single();
 
-  return (created ?? null) as Conversation | null;
+  return (data ?? null) as Conversation | null;
+}
+
+export async function deleteConversation(conversationId: string): Promise<boolean> {
+  await supabase.from('messages').delete().eq('conversation_id', conversationId);
+  const { error } = await supabase.from('conversations').delete().eq('id', conversationId);
+  return !error;
+}
+
+export async function updateConversationTitle(conversationId: string, title: string): Promise<void> {
+  await supabase.from('conversations').update({ title }).eq('id', conversationId);
 }
 
 export async function getMessages(conversationId: string): Promise<Message[]> {

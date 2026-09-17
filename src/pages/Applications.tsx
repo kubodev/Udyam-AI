@@ -168,9 +168,9 @@ export default function Applications() {
                   textAlign: 'left', cursor: 'pointer', width: '100%',
                   padding: '0.875rem 1rem',
                   borderRadius: 'var(--radius-md)',
-                  border: `2px solid ${selectedApp?.id === app.id ? 'var(--color-primary-400)' : 'var(--color-surface-200)'}`,
-                  background: selectedApp?.id === app.id ? 'var(--color-primary-50)' : 'white',
-                  boxShadow: 'var(--shadow-card)', transition: 'all 0.15s',
+                  border: `1.5px solid ${selectedApp?.id === app.id ? 'rgba(125, 142, 255, 0.6)' : 'rgba(255, 255, 255, 0.08)'}`,
+                  background: selectedApp?.id === app.id ? 'rgba(98, 117, 245, 0.16)' : 'rgba(255, 255, 255, 0.03)',
+                  boxShadow: 'var(--shadow-card)', transition: 'all 0.15s ease',
                 }}
               >
                 <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-900)', marginBottom: '0.375rem', lineHeight: 1.4 }}>

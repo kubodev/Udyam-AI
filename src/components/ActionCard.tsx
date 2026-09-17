@@ -40,40 +40,47 @@ export default function ActionCard({ card }: { card: ActionCardData }) {
       <div
         style={{
           display: 'flex', alignItems: 'center', gap: '0.75rem',
-          padding: '0.625rem 0.875rem',
-          background: 'white',
-          border: '1px solid var(--color-surface-200)',
-          borderRadius: 'var(--radius-lg)',
+          padding: '0.65rem 0.95rem',
+          background: 'rgba(255, 255, 255, 0.04)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: 'var(--radius-md)',
           cursor: 'pointer',
-          boxShadow: 'var(--shadow-card)',
-          transition: 'all 0.15s',
+          boxShadow: '0 4px 16px -2px rgba(0, 0, 0, 0.25)',
+          transition: 'all 0.15s ease',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)';
+          e.currentTarget.style.boxShadow = '0 8px 24px -2px rgba(0, 0, 0, 0.45)';
           e.currentTarget.style.transform = 'translateY(-1px)';
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.07)';
+          e.currentTarget.style.borderColor = 'rgba(125, 142, 255, 0.35)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+          e.currentTarget.style.boxShadow = '0 4px 16px -2px rgba(0, 0, 0, 0.25)';
           e.currentTarget.style.transform = 'none';
+          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)';
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
         }}
       >
         <div style={{
-          width: '1.875rem', height: '1.875rem', borderRadius: 'var(--radius-md)',
-          background: `${color}18`,
+          width: '2rem', height: '2rem', borderRadius: 'var(--radius-sm)',
+          background: `${color}25`,
+          border: `1px solid ${color}40`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           flexShrink: 0,
         }}>
           <Icon size={15} color={color} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-900)' }}>{card.label}</p>
+          <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-800)', margin: '0 0 0.125rem 0' }}>{card.label}</p>
           {card.description && (
-            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
               {card.description}
             </p>
           )}
         </div>
-        <ArrowRight size={13} color="var(--color-surface-300)" style={{ flexShrink: 0 }} />
+        <ArrowRight size={13} color="var(--color-surface-400)" style={{ flexShrink: 0 }} />
       </div>
     </Link>
   );

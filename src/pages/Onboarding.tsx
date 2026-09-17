@@ -266,8 +266,8 @@ export default function Onboarding() {
                   </select>
                 </Field>
               </div>
-              <div style={{ padding: '0.875rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary-200)' }}>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)' }}>
+              <div style={{ padding: '0.85rem 1.15rem', background: 'rgba(98, 117, 245, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(113, 134, 255, 0.28)', backdropFilter: 'blur(12px)' }}>
+                <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', margin: 0, lineHeight: 1.5 }}>
                   💡 This information helps UdyamAI generate accurate funding fit checks and business health assessments. All data is private to your account.
                 </p>
               </div>
@@ -286,11 +286,11 @@ export default function Onboarding() {
                       style={{
                         padding: '0.625rem 0.75rem',
                         borderRadius: 'var(--radius-md)',
-                        border: `1.5px solid ${form.primary_goal === g ? 'var(--color-primary-500)' : 'var(--color-surface-300)'}`,
-                        background: form.primary_goal === g ? 'var(--color-primary-50)' : 'white',
-                        color: form.primary_goal === g ? 'var(--color-primary-700)' : 'var(--color-surface-700)',
+                        border: `1.5px solid ${form.primary_goal === g ? 'rgba(125, 142, 255, 0.6)' : 'rgba(255, 255, 255, 0.08)'}`,
+                        background: form.primary_goal === g ? 'rgba(98, 117, 245, 0.18)' : 'rgba(255, 255, 255, 0.03)',
+                        color: form.primary_goal === g ? '#c7d2fe' : 'var(--color-surface-700)',
                         fontSize: '0.8125rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left',
-                        transition: 'all 0.15s',
+                        transition: 'all 0.15s ease',
                       }}
                     >
                       {g}
