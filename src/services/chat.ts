@@ -112,8 +112,9 @@ export async function sendChatMessage(
       };
     }
 
+    const model = import.meta.env.VITE_GEMINI_MODEL || 'gemini-3.5-flash-lite';
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -136,7 +137,8 @@ export async function sendChatMessage(
     const data = await response.json() as {
       candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
     };
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const parts = data?.candidates?.[0]?.content?.parts ?? [];
+    const text = parts.map((p) => p.text ?? '').join('').trim();
     if (!text) throw new Error('Empty response from Gemini');
 
     return { content: text };

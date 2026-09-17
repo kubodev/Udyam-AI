@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageSquare, RefreshCw, Plus, ListChecks } from 'lucide-react';
+import { Send, Sparkles, RefreshCw, Plus, ListChecks, ShieldCheck, Landmark, Calculator, ChevronRight } from 'lucide-react';
 import ChatMessageBubble from '../components/ChatMessage';
 import ActionCard, { detectActionCards, type ActionCardData } from '../components/ActionCard';
 import { sendChatMessage, getOrCreateConversation, getMessages, saveMessage } from '../services/chat';
@@ -25,6 +25,12 @@ const SUGGESTIONS = [
   'How do I improve my business health score?',
   'Generate a UPI QR for me',
   'What government schemes apply to my business?',
+];
+
+const PROMPT_CARDS = [
+  { label: 'Stay protected', text: 'Is this UPI message a scam?', icon: ShieldCheck, tone: 'safe' },
+  { label: 'Find an opportunity', text: 'Find funding for my tailoring business', icon: Landmark, tone: 'funding' },
+  { label: 'Make a decision', text: 'What is a break-even point?', icon: Calculator, tone: 'finance' },
 ];
 
 export default function AIAssistant() {
@@ -159,44 +165,43 @@ export default function AIAssistant() {
       className="animate-fade-in"
       style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 6.5rem)' }}
     >
-      <div className="page-header">
-        <h1>AI Assistant</h1>
-        <p>Ask anything about your business — fraud protection, funding, finances</p>
+      <div className="assistant-page-header">
+        <div>
+          <div className="assistant-eyebrow"><span className="assistant-status-dot" /> Your business copilot</div>
+          <h1>Good to see you{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}.</h1>
+          <p>Practical guidance for every business decision, in one conversation.</p>
+        </div>
       </div>
 
-      <div
-        className="card"
-        style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
-      >
+      <div className="assistant-workspace">
+        <div className="assistant-context-bar">
+          <div className="assistant-orb"><Sparkles size={16} /></div>
+          <div><strong>UdyamAI</strong><span>Ready to help with your next move</span></div>
+          <span className="assistant-online">Online</span>
+        </div>
         {/* Messages area */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="assistant-messages">
           {initializing ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
               <RefreshCw size={18} color="var(--color-surface-400)" style={{ animation: 'spin 1s linear infinite' }} />
             </div>
           ) : messages.length === 0 ? (
             /* Empty state with suggestions */
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem', textAlign: 'center' }}>
-              <div style={{ width: '4rem', height: '4rem', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500))', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
-                <Sparkles size={24} color="white" />
-              </div>
-              <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, color: 'var(--color-surface-900)', marginBottom: '0.375rem' }}>
-                Hi{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}! I'm UdyamAI
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-500)', marginBottom: '1.5rem', maxWidth: '28rem' }}>
-                I know your business context and can help with fraud protection, funding discovery, financial tools, and business decisions.
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center', maxWidth: '36rem' }}>
-                {SUGGESTIONS.map((s) => (
-                  <button
-                    key={s}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.8125rem' }}
-                    onClick={() => handleSend(s)}
-                  >
-                    {s}
+            <div className="assistant-welcome">
+              <div className="assistant-welcome__icon"><Sparkles size={24} /></div>
+              <h2>What are we working on?</h2>
+              <p>I have your business context in mind. Pick a direction or ask me anything.</p>
+              <div className="prompt-card-grid">
+                {PROMPT_CARDS.map(({ label, text, icon: Icon, tone }) => (
+                  <button key={text} className={`prompt-card prompt-card--${tone}`} onClick={() => handleSend(text)}>
+                    <span className="prompt-card__icon"><Icon size={18} /></span>
+                    <span><small>{label}</small><strong>{text}</strong></span><ChevronRight size={16} className="prompt-card__arrow" />
                   </button>
                 ))}
+              </div>
+              <div className="assistant-quick-prompts">
+                <span>Try asking</span>
+                {SUGGESTIONS.slice(3).map((s) => <button key={s} onClick={() => handleSend(s)}>{s}</button>)}
               </div>
             </div>
           ) : (
@@ -206,7 +211,7 @@ export default function AIAssistant() {
 
                 {/* Action cards + Create Task — shown after assistant messages */}
                 {msg.role === 'assistant' && (
-                  <div style={{ marginLeft: '2.5rem', marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
+                  <div className="message-actions">
                     {/* Action cards */}
                     {msg.actionCards && msg.actionCards.length > 0 && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
@@ -222,17 +227,7 @@ export default function AIAssistant() {
                         onClick={() => handleCreateTask(msg)}
                         disabled={creatingTask === msg.id}
                         title="Create a task from this conversation"
-                        style={{
-                          display: 'flex', alignItems: 'center', gap: '0.3rem',
-                          padding: '0.25rem 0.625rem',
-                          fontSize: '0.75rem', fontWeight: 500,
-                          color: 'var(--color-surface-400)',
-                          background: 'none', border: '1px solid var(--color-surface-200)',
-                          borderRadius: 'var(--radius-md)', cursor: 'pointer',
-                          transition: 'all 0.15s',
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-primary-600)'; e.currentTarget.style.borderColor = 'var(--color-primary-300)'; e.currentTarget.style.background = 'var(--color-primary-50)'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-surface-400)'; e.currentTarget.style.borderColor = 'var(--color-surface-200)'; e.currentTarget.style.background = 'none'; }}
+                        className="create-task-button"
                       >
                         {creatingTask === msg.id
                           ? <RefreshCw size={11} style={{ animation: 'spin 1s linear infinite' }} />
@@ -250,9 +245,7 @@ export default function AIAssistant() {
 
           {/* Loading indicator */}
           {loading && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-              <div style={{ width: '1.875rem', height: '1.875rem', borderRadius: '50%', background: 'linear-gradient(135deg, var(--color-accent-400), var(--color-accent-600))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', color: 'white', fontWeight: 600 }}>✦</div>
-              <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', padding: '0.75rem 1rem', background: 'var(--color-surface-100)', borderRadius: '0.25rem 1rem 1rem 1rem', border: '1px solid var(--color-surface-300)', boxShadow: 'var(--shadow-card)' }}>
+            <div className="chat-typing"><div className="chat-typing__avatar">✦</div><div className="chat-typing__dots">
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
@@ -263,27 +256,21 @@ export default function AIAssistant() {
                     }}
                   />
                 ))}
-              </div>
-            </div>
+              </div></div>
           )}
           <div ref={bottomRef} />
         </div>
 
         {/* Input bar */}
-        <div style={{ borderTop: '1px solid var(--color-surface-200)', padding: '0.875rem 1.25rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-end' }}>
-          <MessageSquare size={18} color="var(--color-surface-400)" style={{ marginBottom: '0.5rem', flexShrink: 0 }} />
+        <div className="assistant-composer-wrap">
+          <div className="assistant-composer">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask UdyamAI anything… (Enter to send, Shift+Enter for new line)"
             rows={1}
-            style={{
-              flex: 1, border: 'none', outline: 'none', resize: 'none',
-              fontSize: '0.875rem', color: 'var(--color-surface-800)',
-              background: 'transparent', lineHeight: 1.5, maxHeight: '8rem',
-              fontFamily: 'var(--font-sans)',
-            }}
+            className="assistant-composer__input"
             onInput={(e) => {
               const el = e.currentTarget;
               el.style.height = 'auto';
@@ -293,11 +280,12 @@ export default function AIAssistant() {
           <button
             onClick={() => handleSend()}
             disabled={!input.trim() || loading}
-            className="btn btn-primary"
-            style={{ padding: '0.5rem 0.75rem', flexShrink: 0 }}
+            className="assistant-send-button"
           >
             <Send size={15} />
           </button>
+          </div>
+          <p>UdyamAI can make mistakes. Verify important financial or legal information.</p>
         </div>
       </div>
     </div>

@@ -16,9 +16,9 @@ function statusIcon(status: HealthCheck['status']) {
 }
 
 function statusBg(status: HealthCheck['status']) {
-  if (status === 'healthy') return { bg: '#f0fdf4', border: '#bbf7d0' };
-  if (status === 'needs_attention') return { bg: '#fffbeb', border: '#fde68a' };
-  return { bg: '#fef2f2', border: '#fecaca' };
+  if (status === 'healthy') return { bg: 'rgba(61, 213, 152, 0.08)', border: 'rgba(61, 213, 152, 0.24)' };
+  if (status === 'needs_attention') return { bg: 'rgba(245, 165, 36, 0.08)', border: 'rgba(245, 165, 36, 0.24)' };
+  return { bg: 'rgba(247, 108, 108, 0.08)', border: 'rgba(247, 108, 108, 0.24)' };
 }
 
 export default function BusinessHealth() {
@@ -115,10 +115,11 @@ export default function BusinessHealth() {
       </div>
 
       {/* Overall status */}
-      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <div style={{
           width: '3.5rem', height: '3.5rem', borderRadius: '50%',
-          background: overallStatus === 'healthy' ? '#dcfce7' : overallStatus === 'needs_attention' ? '#fef3c7' : '#fee2e2',
+          background: overallStatus === 'healthy' ? 'rgba(61, 213, 152, 0.14)' : overallStatus === 'needs_attention' ? 'rgba(245, 165, 36, 0.14)' : 'rgba(247, 108, 108, 0.14)',
+          border: `1px solid ${overallStatus === 'healthy' ? 'rgba(61, 213, 152, 0.28)' : overallStatus === 'needs_attention' ? 'rgba(245, 165, 36, 0.28)' : 'rgba(247, 108, 108, 0.28)'}`,
           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
           <HeartPulse size={22} color={overallStatus === 'healthy' ? 'var(--color-success-600)' : overallStatus === 'needs_attention' ? 'var(--color-accent-600)' : 'var(--color-danger-600)'} />
@@ -138,15 +139,15 @@ export default function BusinessHealth() {
       </div>
 
       {/* Individual checks */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {checks.map((check) => {
           const { bg, border } = statusBg(check.status);
           return (
-            <div key={check.label} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
+            <div key={check.label} style={{ background: bg, border: `1px solid ${border}`, backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', borderRadius: 'var(--radius-lg)', padding: '1rem 1.25rem', display: 'flex', alignItems: 'flex-start', gap: '0.875rem' }}>
               <div style={{ marginTop: '1px', flexShrink: 0 }}>{statusIcon(check.status)}</div>
               <div style={{ flex: 1 }}>
                 <p style={{ fontSize: '0.9375rem', fontWeight: 600, color: 'var(--color-surface-900)', marginBottom: '0.25rem' }}>{check.label}</p>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-600)', lineHeight: 1.5 }}>{check.reason}</p>
+                <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-400)', lineHeight: 1.5 }}>{check.reason}</p>
               </div>
               {check.action && (
                 <Link

@@ -196,24 +196,26 @@ export default function Documents() {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           gap: '0.5rem', padding: '0.75rem 1rem',
-          backgroundColor: '#fee2e2', border: '1px solid #fecaca',
+          background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.3)',
+          backdropFilter: 'blur(12px)',
           borderRadius: 'var(--radius-md)', marginBottom: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertCircle size={15} color="var(--color-danger-600)" />
-            <span style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)' }}>{error}</span>
+            <AlertCircle size={15} color="#f87171" />
+            <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{error}</span>
           </div>
-          <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-            <X size={15} color="var(--color-danger-600)" />
+          <button onClick={() => setError(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem' }}>
+            <X size={15} color="#fca5a5" />
           </button>
         </div>
       )}
 
       {/* Info banner */}
       <div style={{
-        padding: '0.875rem 1rem', marginBottom: '1.25rem',
-        background: 'var(--color-primary-50)', border: '1px solid var(--color-primary-200)',
-        borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', color: 'var(--color-primary-700)',
+        padding: '0.875rem 1.15rem', marginBottom: '1.25rem',
+        background: 'rgba(98, 117, 245, 0.1)', border: '1px solid rgba(113, 134, 255, 0.28)',
+        backdropFilter: 'blur(12px)',
+        borderRadius: 'var(--radius-md)', fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.5,
       }}>
         📄 Supported formats: PDF, PNG, JPG, WebP — max 10 MB per file.
         Files are stored securely in Supabase Storage. Extraction runs automatically after upload.

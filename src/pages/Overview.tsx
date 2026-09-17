@@ -19,8 +19,8 @@ const quickActions = [
 
 function HealthIndicator({ label, value, variant }: { label: string; value: string; variant: string }) {
   return (
-    <div className="card" style={{ padding: '1rem' }}>
-      <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-surface-500)', marginBottom: '0.375rem' }}>{label}</p>
+    <div className="glass-card" style={{ padding: '1.1rem 1.25rem' }}>
+      <p style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--color-surface-400)', marginBottom: '0.5rem', letterSpacing: '0.02em' }}>{label}</p>
       <span className={`badge badge-${variant}`}>{value}</span>
     </div>
   );
@@ -153,7 +153,7 @@ export default function Overview() {
     return (
       <div className="animate-fade-in">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {[1, 2].map((i) => <div key={i} className="card animate-pulse-subtle" style={{ height: '6rem' }} />)}
+          {[1, 2].map((i) => <div key={i} className="glass-card animate-pulse-subtle" style={{ height: '6rem' }} />)}
         </div>
       </div>
     );
@@ -168,28 +168,32 @@ export default function Overview() {
 
       {/* Alerts Banner */}
       {visibleAlerts.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', marginBottom: '1.5rem' }}>
           {visibleAlerts.map((alert) => (
             <div
               key={alert.id}
               style={{
                 display: 'flex', alignItems: 'center', gap: '0.75rem',
-                padding: '0.75rem 1rem',
-                background: '#fffbeb', border: '1px solid #fde68a',
-                borderRadius: 'var(--radius-md)',
+                padding: '0.85rem 1.15rem',
+                background: 'rgba(245, 165, 36, 0.1)',
+                border: '1px solid rgba(245, 165, 36, 0.28)',
+                borderRadius: 'var(--radius-lg)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.3)',
               }}
             >
-              <AlertTriangle size={15} color="#d97706" style={{ flexShrink: 0 }} />
-              <p style={{ flex: 1, fontSize: '0.8125rem', color: '#92400e', lineHeight: 1.4 }}>{alert.message}</p>
-              <Link to={alert.to} style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#b45309', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <AlertTriangle size={16} color="#fbbf24" style={{ flexShrink: 0 }} />
+              <p style={{ flex: 1, fontSize: '0.8125rem', color: '#fef08a', lineHeight: 1.45, margin: 0 }}>{alert.message}</p>
+              <Link to={alert.to} style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fde047', textDecoration: 'none', whiteSpace: 'nowrap', flexShrink: 0, borderBottom: '1px dotted rgba(253, 224, 71, 0.5)' }}>
                 {alert.linkLabel}
               </Link>
               <button
                 onClick={() => setDismissedAlerts((prev) => new Set([...prev, alert.id]))}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: '#d97706', flexShrink: 0 }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '0.2rem', color: '#fbbf24', flexShrink: 0, opacity: 0.8 }}
                 title="Dismiss"
               >
-                <X size={14} />
+                <X size={15} />
               </button>
             </div>
           ))}
@@ -198,31 +202,32 @@ export default function Overview() {
 
       {/* Business Summary Card */}
 
-      <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+      <div className="glass-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <div style={{
-            width: '3rem', height: '3rem',
+            width: '3.25rem', height: '3.25rem',
             borderRadius: 'var(--radius-lg)',
             background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-primary-700))',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            boxShadow: '0 8px 20px -4px rgba(98, 117, 245, 0.4)',
           }}>
-            <Sparkles size={18} color="white" />
+            <Sparkles size={20} color="white" />
           </div>
           <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-surface-900)' }}>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 750, color: 'var(--color-surface-900)', letterSpacing: '-0.02em', margin: '0 0 0.25rem 0' }}>
               {profile?.business_name ?? 'Your Business'}
             </h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-500)' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-400)', margin: 0 }}>
               {profile?.sector && profile?.location
                 ? `${profile.sector} · ${profile.location}${profile.state ? `, ${profile.state}` : ''}`
                 : 'Complete your profile for a detailed summary'}
             </p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.25rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.375rem' }}>
             {profile?.monthly_revenue && (
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>Monthly revenue</p>
-                <p style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-primary-600)' }}>
+                <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', margin: '0 0 0.15rem 0' }}>Monthly revenue</p>
+                <p style={{ fontSize: '1.125rem', fontWeight: 750, color: '#9bb2ff', margin: 0 }}>
                   ₹{profile.monthly_revenue.toLocaleString('en-IN')}
                 </p>
               </div>
@@ -233,14 +238,14 @@ export default function Overview() {
           </div>
         </div>
         {profile?.description && (
-          <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--color-surface-600)', lineHeight: 1.6, paddingTop: '1rem', borderTop: '1px solid var(--color-surface-100)' }}>
+          <p style={{ marginTop: '1.25rem', fontSize: '0.875rem', color: 'var(--color-surface-400)', lineHeight: 1.65, paddingTop: '1.25rem', borderTop: '1px solid rgba(255, 255, 255, 0.07)', marginBottom: 0 }}>
             {profile.description}
           </p>
         )}
       </div>
 
       {/* Health Indicators */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(11rem, 1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(11rem, 1fr))', gap: '0.75rem', marginBottom: '1.75rem' }}>
         <HealthIndicator label="Financial Records" value={financialHealth} variant={financialHealth === 'Has data' ? 'success' : 'warning'} />
         <HealthIndicator label="Funding Readiness" value={fundingReadiness} variant={fundingReadiness === 'Ready' ? 'success' : 'warning'} />
         <HealthIndicator label="GST / Compliance" value={complianceStatus} variant={complianceStatus === 'Registered' ? 'success' : 'danger'} />
@@ -248,36 +253,41 @@ export default function Overview() {
       </div>
 
       {/* Quick Actions */}
-      <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-600)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem' }}>
+      <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-500)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.875rem' }}>
         Quick Actions
       </h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(9rem, 1fr))', gap: '0.625rem', marginBottom: '1.75rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(9.5rem, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
         {quickActions.map((action) => (
           <Link
             key={action.label}
             to={action.to}
-            className="card"
+            className="glass-card"
             style={{
-              padding: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
+              padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.625rem',
               cursor: 'pointer', textDecoration: 'none',
-              fontSize: '0.8125rem', fontWeight: 500, color: 'var(--color-surface-700)',
-              transition: 'all 0.15s',
+              fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-700)',
             }}
           >
-            <action.icon size={22} color={action.color} />
+            <div style={{
+              width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-md)',
+              background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.06)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <action.icon size={20} color={action.color} />
+            </div>
             {action.label}
           </Link>
         ))}
       </div>
 
       {/* Recent Activity */}
-      <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-600)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.75rem' }}>
+      <h3 style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-500)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.875rem' }}>
         Recent Activity
       </h3>
-      <div className="card">
+      <div className="glass-card" style={{ overflow: 'hidden' }}>
         {activityLoading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1rem' }}>
-            {[1, 2].map((i) => <div key={i} className="animate-pulse-subtle" style={{ height: '3rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-100)' }} />)}
+            {[1, 2].map((i) => <div key={i} className="animate-pulse-subtle" style={{ height: '3.5rem', borderRadius: 'var(--radius-md)', background: 'rgba(255, 255, 255, 0.04)' }} />)}
           </div>
         ) : activity.length === 0 ? (
           <div className="empty-state">
@@ -293,31 +303,32 @@ export default function Overview() {
                 to={item.to}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '0.875rem',
-                  padding: '0.875rem 1.25rem',
+                  padding: '0.95rem 1.25rem',
                   textDecoration: 'none',
-                  borderBottom: idx < activity.length - 1 ? '1px solid var(--color-surface-100)' : 'none',
-                  transition: 'background 0.1s',
+                  borderBottom: idx < activity.length - 1 ? '1px solid rgba(255, 255, 255, 0.06)' : 'none',
+                  transition: 'background 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--color-surface-50)')}
+                onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.04)')}
                 onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
                 <div style={{
                   width: '2.25rem', height: '2.25rem', flexShrink: 0,
                   borderRadius: 'var(--radius-md)',
-                  background: 'var(--color-surface-100)',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.07)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   {activityIcon(item.type)}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-800)' }}>{item.title}</p>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.subtitle}</p>
+                  <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-surface-800)', margin: '0 0 0.15rem 0' }}>{item.title}</p>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>{item.subtitle}</p>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', flexShrink: 0 }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>
                     {new Date(item.time).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                   </span>
-                  <ArrowRight size={14} color="var(--color-surface-300)" />
+                  <ArrowRight size={14} color="var(--color-surface-400)" />
                 </div>
               </Link>
             ))}

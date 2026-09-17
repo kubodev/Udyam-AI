@@ -122,15 +122,15 @@ export default function Settings() {
       </div>
 
       {saveSuccess && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <Check size={15} color="var(--color-success-600)" />
-          <span style={{ fontSize: '0.8125rem', color: 'var(--color-success-600)' }}>Profile saved successfully.</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(61, 213, 152, 0.12)', border: '1px solid rgba(61, 213, 152, 0.3)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
+          <Check size={15} color="#4ade80" />
+          <span style={{ fontSize: '0.8125rem', color: '#86efac' }}>Profile saved successfully.</span>
         </div>
       )}
       {saveError && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#fee2e2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <AlertCircle size={15} color="var(--color-danger-600)" />
-          <span style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)' }}>{saveError}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.3)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
+          <AlertCircle size={15} color="#f87171" />
+          <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{saveError}</span>
         </div>
       )}
 
@@ -276,12 +276,12 @@ export default function Settings() {
           <Shield size={17} color="var(--color-primary-600)" />
           <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-surface-900)' }}>Privacy & Data Controls</h2>
         </div>
-        <div style={{ padding: '0.875rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary-200)', marginBottom: '0.875rem' }}>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)', lineHeight: 1.6 }}>
-            <strong>What we store:</strong> Your business profile, conversation history, uploaded documents, extracted financial data, funding applications, and tasks. All data is private to your account (enforced with row-level security on every table).
+        <div style={{ padding: '1rem 1.15rem', background: 'rgba(98, 117, 245, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid rgba(113, 134, 255, 0.28)', backdropFilter: 'blur(12px)', marginBottom: '0.875rem' }}>
+          <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.6, margin: 0 }}>
+            <strong style={{ color: '#e0e7ff' }}>What we store:</strong> Your business profile, conversation history, uploaded documents, extracted financial data, funding applications, and tasks. All data is private to your account (enforced with row-level security on every table).
           </p>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)', lineHeight: 1.6, marginTop: '0.5rem' }}>
-            <strong>What we don't do:</strong> We never share your data or use it for anything beyond powering your own UdyamAI experience. No training, no third-party sharing.
+          <p style={{ fontSize: '0.8125rem', color: '#c7d2fe', lineHeight: 1.6, marginTop: '0.5rem', marginBottom: 0 }}>
+            <strong style={{ color: '#e0e7ff' }}>What we don't do:</strong> We never share your data or use it for anything beyond powering your own UdyamAI experience. No training, no third-party sharing.
           </p>
         </div>
         {!confirmDelete ? (

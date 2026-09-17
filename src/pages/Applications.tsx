@@ -137,9 +137,9 @@ export default function Applications() {
       )}
 
       {error && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', backgroundColor: '#fee2e2', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
-          <AlertCircle size={15} color="var(--color-danger-600)" />
-          <span style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)' }}>{error}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.75rem 1rem', background: 'rgba(247, 108, 108, 0.12)', border: '1px solid rgba(247, 108, 108, 0.3)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1rem' }}>
+          <AlertCircle size={15} color="#f87171" />
+          <span style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{error}</span>
         </div>
       )}
 
@@ -216,15 +216,15 @@ export default function Applications() {
               </div>
 
               {selectedApp.missing_fields && selectedApp.missing_fields.length > 0 && (
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', padding: '0.875rem 1rem', backgroundColor: '#fff5f5', border: '1px solid #fecaca', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem' }}>
-                  <AlertCircle size={15} color="var(--color-danger-600)" style={{ flexShrink: 0, marginTop: '1px' }} />
+                <div style={{ display: 'flex', gap: '0.625rem', alignItems: 'flex-start', padding: '0.875rem 1rem', background: 'rgba(247, 108, 108, 0.1)', border: '1px solid rgba(247, 108, 108, 0.28)', backdropFilter: 'blur(12px)', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem' }}>
+                  <AlertCircle size={15} color="#f87171" style={{ flexShrink: 0, marginTop: '2px' }} />
                   <div>
-                    <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: 'var(--color-danger-600)', marginBottom: '0.25rem' }}>
+                    <p style={{ fontSize: '0.8125rem', fontWeight: 600, color: '#fca5a5', marginBottom: '0.25rem' }}>
                       Missing info — update your profile to complete these:
                     </p>
                     <ul style={{ paddingLeft: '1rem', margin: 0 }}>
                       {selectedApp.missing_fields.map((f) => (
-                        <li key={f} style={{ fontSize: '0.8125rem', color: 'var(--color-danger-600)' }}>{f}</li>
+                        <li key={f} style={{ fontSize: '0.8125rem', color: '#fca5a5' }}>{f}</li>
                       ))}
                     </ul>
                   </div>
