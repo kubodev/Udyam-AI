@@ -181,7 +181,7 @@ export default function AIAssistant() {
                 <Sparkles size={24} color="white" />
               </div>
               <h3 style={{ fontSize: '1.0625rem', fontWeight: 600, color: 'var(--color-surface-900)', marginBottom: '0.375rem' }}>
-                Hi{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}! I'm VyapaarAI
+                Hi{profile?.name ? `, ${profile.name.split(' ')[0]}` : ''}! I'm UdyamAI
               </h3>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-500)', marginBottom: '1.5rem', maxWidth: '28rem' }}>
                 I know your business context and can help with fraud protection, funding discovery, financial tools, and business decisions.
@@ -276,7 +276,7 @@ export default function AIAssistant() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask VyapaarAI anything… (Enter to send, Shift+Enter for new line)"
+            placeholder="Ask UdyamAI anything… (Enter to send, Shift+Enter for new line)"
             rows={1}
             style={{
               flex: 1, border: 'none', outline: 'none', resize: 'none',

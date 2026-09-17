@@ -26,7 +26,7 @@ function LoadingScreen() {
         <div className="animate-pulse-subtle" style={{ width: '2.5rem', height: '2.5rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontSize: '1.25rem' }}>✦</span>
         </div>
-        <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-400)' }}>Loading VyapaarAI…</p>
+        <p style={{ fontSize: '0.875rem', color: 'var(--color-surface-400)' }}>Loading UdyamAI…</p>
       </div>
     </div>
   );

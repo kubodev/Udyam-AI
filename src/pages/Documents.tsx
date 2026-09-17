@@ -229,7 +229,7 @@ export default function Documents() {
             <FileText className="empty-state-icon" />
             <h3>No documents uploaded yet</h3>
             <p>
-              Upload bank statements, invoices, or certificates. VyapaarAI will extract
+              Upload bank statements, invoices, or certificates. UdyamAI will extract
               key financial data to power health checks and funding fit assessments.
             </p>
             <button

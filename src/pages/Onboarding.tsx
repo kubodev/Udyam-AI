@@ -143,7 +143,7 @@ export default function Onboarding() {
         <div style={{ width: '2.25rem', height: '2.25rem', borderRadius: 'var(--radius-md)', background: 'linear-gradient(135deg, var(--color-primary-500), var(--color-accent-500))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Sparkles size={16} color="white" />
         </div>
-        <span style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-surface-900)' }}>VyapaarAI</span>
+        <span style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--color-surface-900)' }}>UdyamAI</span>
       </div>
 
       {/* Card */}
@@ -268,7 +268,7 @@ export default function Onboarding() {
               </div>
               <div style={{ padding: '0.875rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary-200)' }}>
                 <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)' }}>
-                  💡 This information helps VyapaarAI generate accurate funding fit checks and business health assessments. All data is private to your account.
+                  💡 This information helps UdyamAI generate accurate funding fit checks and business health assessments. All data is private to your account.
                 </p>
               </div>
             </div>

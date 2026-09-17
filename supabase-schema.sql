@@ -1,5 +1,5 @@
 -- ============================================================
--- VyapaarAI — Supabase Database Schema
+-- UdyamAI — Supabase Database Schema
 -- Run in Supabase SQL editor (Dashboard → SQL Editor → New Query)
 -- ============================================================
 

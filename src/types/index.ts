@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────
-   VyapaarAI — Core Type Definitions
+   UdyamAI — Core Type Definitions
    Mirrors the Supabase Postgres schema defined
    in architecture/MAIN_DEVELOPMENT_PROMPT.md §5.
    ────────────────────────────────────────────── */

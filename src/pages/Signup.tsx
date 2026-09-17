@@ -44,7 +44,7 @@ export default function Signup() {
           <div style={{ width: '2.75rem', height: '2.75rem', borderRadius: 'var(--radius-lg)', background: 'linear-gradient(135deg, var(--color-primary-400), var(--color-accent-400))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Sparkles size={20} color="white" />
           </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>VyapaarAI</span>
+          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>UdyamAI</span>
         </div>
         <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>
           Start your free<br />business account
@@ -54,7 +54,7 @@ export default function Signup() {
         </p>
         <div style={{ padding: '1.25rem', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-lg)', border: '1px solid rgba(255,255,255,0.1)' }}>
           <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-300)', fontStyle: 'italic', lineHeight: 1.6 }}>
-            "VyapaarAI helped me understand which government schemes my tailoring business qualifies for — in minutes, not weeks."
+            "UdyamAI helped me understand which government schemes my tailoring business qualifies for — in minutes, not weeks."
           </p>
           <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-500)', marginTop: '0.5rem' }}>— Lakshmi, Vijayawada</p>
         </div>
@@ -143,7 +143,7 @@ export default function Signup() {
                 </button>
 
                 <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)', textAlign: 'center' }}>
-                  By creating an account, you agree that your data is stored securely and used only to power your VyapaarAI experience.
+                  By creating an account, you agree that your data is stored securely and used only to power your UdyamAI experience.
                 </p>
               </form>
             </>

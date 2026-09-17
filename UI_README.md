@@ -1,4 +1,4 @@
-# VyapaarAI — UI & Implementation Guide for Future Developers
+# UdyamAI — UI & Implementation Guide for Future Developers
 
 > **Status:** Base scaffold complete. All pages are routed placeholders.
 > **LLM/Model:** TBD — architecture supports any tool-calling LLM.
@@ -32,7 +32,7 @@
 hackathon/
 ├── architecture/              # Product & AI architecture docs
 │   ├── MAIN_DEVELOPMENT_PROMPT.md
-│   └── VYAPAARAI_ARCHITECTURE.md
+│   └── UDYAMAI_ARCHITECTURE.md
 ├── public/                    # Static assets
 ├── src/
 │   ├── components/            # Reusable UI components
@@ -350,7 +350,7 @@ App
 ### System Prompt Template
 
 ```
-You are VyapaarAI, an AI business companion for Indian micro-entrepreneurs.
+You are UdyamAI, an AI business companion for Indian micro-entrepreneurs.
 
 BUSINESS CONTEXT:
 {JSON of user's business_profiles row}
@@ -636,4 +636,4 @@ Document these in `FUTURE_PLANS.md`, do not implement:
 
 ---
 
-*This document should be updated as implementation progresses. Refer to `architecture/VYAPAARAI_ARCHITECTURE.md` and `architecture/MAIN_DEVELOPMENT_PROMPT.md` for the full product and AI architecture.*
+*This document should be updated as implementation progresses. Refer to `architecture/UDYAMAI_ARCHITECTURE.md` and `architecture/MAIN_DEVELOPMENT_PROMPT.md` for the full product and AI architecture.*

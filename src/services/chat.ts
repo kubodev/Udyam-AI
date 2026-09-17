@@ -57,7 +57,7 @@ export interface ChatResponse {
   error?: string;
 }
 
-const SYSTEM_PROMPT = `You are VyapaarAI — a trusted AI business companion for small and micro-entrepreneurs in India.
+const SYSTEM_PROMPT = `You are UdyamAI — a trusted AI business companion for small and micro-entrepreneurs in India.
 
 Your capabilities:
 - Fraud & scam detection: analyse UPI messages, payment requests, and suspicious communications
@@ -141,7 +141,7 @@ export async function sendChatMessage(
 
     return { content: text };
   } catch (err) {
-    console.error('[VyapaarAI chat] Gemini error:', err);
+    console.error('[UdyamAI chat] Gemini error:', err);
     return {
       content: `⚠️ AI service error: ${err instanceof Error ? err.message : String(err)}. Please try again.`,
       error: String(err),

@@ -281,7 +281,7 @@ export default function Settings() {
             <strong>What we store:</strong> Your business profile, conversation history, uploaded documents, extracted financial data, funding applications, and tasks. All data is private to your account (enforced with row-level security on every table).
           </p>
           <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)', lineHeight: 1.6, marginTop: '0.5rem' }}>
-            <strong>What we don't do:</strong> We never share your data or use it for anything beyond powering your own VyapaarAI experience. No training, no third-party sharing.
+            <strong>What we don't do:</strong> We never share your data or use it for anything beyond powering your own UdyamAI experience. No training, no third-party sharing.
           </p>
         </div>
         {!confirmDelete ? (

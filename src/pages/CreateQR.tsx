@@ -129,7 +129,7 @@ export default function CreateQR() {
 
           <div style={{ marginTop: '1.25rem', padding: '0.875rem', background: 'var(--color-primary-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary-200)' }}>
             <p style={{ fontSize: '0.8125rem', color: 'var(--color-primary-700)', lineHeight: 1.5 }}>
-              ⚠️ This QR code generates a valid UPI payment payload. VyapaarAI does not process or verify payments — customers pay directly through their UPI app.
+              ⚠️ This QR code generates a valid UPI payment payload. UdyamAI does not process or verify payments — customers pay directly through their UPI app.
             </p>
           </div>
         </div>

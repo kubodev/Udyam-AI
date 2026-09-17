@@ -49,7 +49,7 @@ export default function Login() {
           }}>
             <Sparkles size={20} color="white" />
           </div>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>VyapaarAI</span>
+          <span style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', letterSpacing: '-0.02em' }}>UdyamAI</span>
         </div>
 
         <h1 style={{ fontSize: '2.25rem', fontWeight: 800, color: 'white', lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.02em' }}>

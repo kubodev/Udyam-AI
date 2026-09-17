@@ -118,7 +118,7 @@ export default function Applications() {
               Ready to draft: {draftOpportunity.name}
             </p>
             <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-500)', marginTop: '0.25rem' }}>
-              VyapaarAI will fill this from your profile. Missing fields shown explicitly — never fabricated.
+              UdyamAI will fill this from your profile. Missing fields shown explicitly — never fabricated.
             </p>
           </div>
           <button

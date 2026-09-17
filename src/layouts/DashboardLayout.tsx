@@ -43,7 +43,7 @@ export default function DashboardLayout() {
                 <span style={{ color: 'var(--color-surface-900)', fontWeight: 500 }}>{profile.business_name}</span>
                 {profile.sector && <span style={{ color: 'var(--color-surface-400)' }}> · {profile.sector}</span>}
               </span>
-            ) : 'VyapaarAI'}
+            ) : 'UdyamAI'}
           </p></div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
             <button className="desktop-only" title="Notifications" style={{ background: 'var(--color-surface-100)', border: '1px solid var(--color-surface-300)', borderRadius: 'var(--radius-md)', color: 'var(--color-surface-500)', display: 'flex', padding: '.45rem', cursor: 'pointer' }}><Bell size={16} /></button>

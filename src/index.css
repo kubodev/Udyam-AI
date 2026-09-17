@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* VyapaarAI — Midnight workspace */
+/* UdyamAI — Midnight workspace */
 @theme {
   --color-primary-50: #eef2ff; --color-primary-100: #dbe4ff; --color-primary-200: #bdcbff; --color-primary-300: #91a6ff; --color-primary-400: #7186ff; --color-primary-500: #6275f5; --color-primary-600: #7889ff; --color-primary-700: #92a0ff; --color-primary-800: #b6c0ff; --color-primary-900: #e1e5ff; --color-primary-950: #f3f5ff;
   --color-accent-50: #fff9e9; --color-accent-100: #fff0bf; --color-accent-200: #ffdf7a; --color-accent-300: #ffc94d; --color-accent-400: #fbbf24; --color-accent-500: #f5a524; --color-accent-600: #ffc95b; --color-accent-700: #ffda87; --color-accent-800: #ffeab5; --color-accent-900: #fff7dd;

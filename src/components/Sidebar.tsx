@@ -81,7 +81,7 @@ export default function Sidebar() {
               letterSpacing: '-0.01em',
             }}
           >
-            VyapaarAI
+            UdyamAI
           </h1>
           <span
             style={{
