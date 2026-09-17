@@ -52,6 +52,14 @@ export async function getDocumentUrl(storagePath: string): Promise<string> {
   return pub.publicUrl;
 }
 
+/** Download an existing private document so it can be extracted again in-browser. */
+export async function getDocumentFile(storagePath: string): Promise<File | null> {
+  const { data } = await supabase.storage.from('documents').download(storagePath);
+  if (!data) return null;
+  const name = storagePath.split('/').pop() ?? 'document';
+  return new File([data], name, { type: data.type || 'application/pdf' });
+}
+
 /** Delete a document and its storage file */
 export async function deleteDocument(doc: Document): Promise<{ error: string | null }> {
   if (doc.storage_path) {
@@ -69,4 +77,12 @@ export async function getExtraction(documentId: string): Promise<DocumentExtract
     .eq('document_id', documentId)
     .maybeSingle();
   return (data ?? null) as DocumentExtraction | null;
+}
+
+/** Update processing status when a client-side extraction completes or fails. */
+export async function updateDocumentStatus(
+  documentId: string,
+  status: Document['status'],
+): Promise<void> {
+  await supabase.from('documents').update({ status }).eq('id', documentId);
 }

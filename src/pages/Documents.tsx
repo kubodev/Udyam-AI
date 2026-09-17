@@ -5,8 +5,9 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import {
-  uploadDocument, getDocuments, deleteDocument, getDocumentUrl, getExtraction,
+  uploadDocument, getDocuments, deleteDocument, getDocumentUrl, getDocumentFile, getExtraction, updateDocumentStatus,
 } from '../services/documents';
+import { extractTextFromFile, saveExtraction } from '../services/ocr';
 import type { Document, DocumentExtraction } from '../types';
 
 const DOC_TYPES: { value: Document['doc_type']; label: string }[] = [
@@ -53,6 +54,7 @@ export default function Documents() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [extractions, setExtractions] = useState<Record<string, DocumentExtraction | null>>({});
   const [loadingExtraction, setLoadingExtraction] = useState<string | null>(null);
+  const [extractingId, setExtractingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -74,15 +76,41 @@ export default function Documents() {
     setError(null);
 
     const { data, error: err } = await uploadDocument(user.id, file, uploadType);
-    setUploading(false);
 
     if (err) {
+      setUploading(false);
       setError(`Upload failed: ${err}`);
       return;
     }
     if (data) {
-      setDocuments((prev) => [data, ...prev]);
+      // Persist the uploaded file first, then immediately extract its PDF text
+      // (or OCR images/scanned PDFs) and store the result for this document.
+      setDocuments((prev) => [{ ...data, status: 'processing' }, ...prev]);
+      await updateDocumentStatus(data.id, 'processing');
+      const extraction = await extractTextFromFile(file);
+
+      if (extraction.text) {
+        await saveExtraction(data.id, extraction.text);
+        const extractedDoc = { ...data, status: 'extracted' as const };
+        setDocuments((prev) => prev.map((doc) => doc.id === data.id ? extractedDoc : doc));
+        setExtractions((prev) => ({
+          ...prev,
+          [data.id]: {
+            id: `local-${data.id}`,
+            document_id: data.id,
+            extracted_fields: { raw_text: extraction.text, source: file.type === 'application/pdf' ? 'PDF text extraction' : 'OCR' },
+            confidence: null,
+            reviewed: false,
+            created_at: new Date().toISOString(),
+          },
+        }));
+      } else {
+        await updateDocumentStatus(data.id, 'error');
+        setDocuments((prev) => prev.map((doc) => doc.id === data.id ? { ...doc, status: 'error' } : doc));
+        setError(`Could not extract text from this file: ${extraction.error ?? 'No readable text found.'}`);
+      }
     }
+    setUploading(false);
 
     // Reset file input
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -111,6 +139,44 @@ export default function Documents() {
       setExtractions((prev) => ({ ...prev, [doc.id]: ext }));
       setLoadingExtraction(null);
     }
+  };
+
+  const handleExtractExisting = async (doc: Document) => {
+    if (!doc.storage_path) return;
+    setExtractingId(doc.id);
+    setError(null);
+    await updateDocumentStatus(doc.id, 'processing');
+    setDocuments((prev) => prev.map((item) => item.id === doc.id ? { ...item, status: 'processing' } : item));
+
+    const file = await getDocumentFile(doc.storage_path);
+    if (!file) {
+      await updateDocumentStatus(doc.id, 'error');
+      setDocuments((prev) => prev.map((item) => item.id === doc.id ? { ...item, status: 'error' } : item));
+      setError('Could not open this stored document for extraction.');
+      setExtractingId(null);
+      return;
+    }
+
+    const result = await extractTextFromFile(file);
+    if (result.text) {
+      await saveExtraction(doc.id, result.text);
+      const extractedDoc = { ...doc, status: 'extracted' as const };
+      setDocuments((prev) => prev.map((item) => item.id === doc.id ? extractedDoc : item));
+      setExtractions((prev) => ({
+        ...prev,
+        [doc.id]: {
+          id: `local-${doc.id}`, document_id: doc.id,
+          extracted_fields: { raw_text: result.text, source: file.type === 'application/pdf' ? 'PDF text extraction' : 'OCR' },
+          confidence: null, reviewed: false, created_at: new Date().toISOString(),
+        },
+      }));
+      setExpandedId(doc.id);
+    } else {
+      await updateDocumentStatus(doc.id, 'error');
+      setDocuments((prev) => prev.map((item) => item.id === doc.id ? { ...item, status: 'error' } : item));
+      setError(`Could not extract text: ${result.error ?? 'No readable text found.'}`);
+    }
+    setExtractingId(null);
   };
 
   const selectedTypeLabel = DOC_TYPES.find((t) => t.value === uploadType)?.label ?? 'Select type';
@@ -323,6 +389,21 @@ export default function Documents() {
 
                   {/* Actions */}
                   <div style={{ display: 'flex', gap: '0.375rem', flexShrink: 0 }}>
+                    {(doc.status === 'uploaded' || doc.status === 'error') && doc.storage_path && (
+                      <button
+                        title="Extract text"
+                        disabled={extractingId === doc.id}
+                        onClick={() => handleExtractExisting(doc)}
+                        style={{
+                          padding: '0.4rem', borderRadius: 'var(--radius-sm)',
+                          border: '1px solid var(--color-primary-300)',
+                          background: 'var(--color-primary-50)', cursor: 'pointer', display: 'flex',
+                          color: 'var(--color-primary-700)',
+                        }}
+                      >
+                        {extractingId === doc.id ? <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <FileText size={15} />}
+                      </button>
+                    )}
                     {doc.storage_path && (
                       <button
                         title="View file"
@@ -381,13 +462,18 @@ export default function Documents() {
                           Extracted Fields
                         </p>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(12rem, 1fr))', gap: '0.5rem 1.5rem' }}>
-                          {Object.entries(extraction.extracted_fields ?? {}).map(([key, value]) => (
+                          {Object.entries(extraction.extracted_fields ?? {}).filter(([key]) => key !== 'raw_text').map(([key, value]) => (
                             <div key={key}>
                               <p style={{ fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>{key.replace(/_/g, ' ')}</p>
                               <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-surface-800)' }}>{String(value)}</p>
                             </div>
                           ))}
                         </div>
+                        {typeof extraction.extracted_fields?.raw_text === 'string' && (
+                          <pre style={{ maxHeight: '20rem', overflow: 'auto', margin: '0.75rem 0 0', padding: '0.75rem', border: '1px solid var(--color-surface-200)', borderRadius: 'var(--radius-sm)', background: '#fff', whiteSpace: 'pre-wrap', font: '0.75rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace', color: 'var(--color-surface-700)' }}>
+                            {extraction.extracted_fields.raw_text}
+                          </pre>
+                        )}
                         {extraction.confidence != null && (
                           <p style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--color-surface-400)' }}>
                             Extraction confidence: {Math.round(extraction.confidence * 100)}%
@@ -399,7 +485,7 @@ export default function Documents() {
                     ) : (
                       <p style={{ fontSize: '0.8125rem', color: 'var(--color-surface-400)' }}>
                         {doc.status === 'uploaded'
-                          ? 'Document uploaded. Extraction runs automatically — check back shortly.'
+                          ? 'This document has not been extracted yet. Upload it again to run extraction.'
                           : doc.status === 'processing'
                             ? 'Extraction in progress…'
                             : 'No extraction data available.'}
@@ -415,4 +501,3 @@ export default function Documents() {
     </div>
   );
 }
-

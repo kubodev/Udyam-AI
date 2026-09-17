@@ -172,6 +172,17 @@ export interface DocumentExtraction {
   created_at: string;
 }
 
+// ── Mock bank / Account Aggregator demo ────────────────────
+export interface MockBankAccount {
+  id: string;
+  user_id: string;
+  bank_name: string;
+  account_name: string;
+  masked_account_number: string;
+  status: 'connected' | 'disconnected';
+  connected_at: string;
+}
+
 // ── Financial Records (P1) ────────────────────
 export type TransactionDirection = 'credit' | 'debit';
 

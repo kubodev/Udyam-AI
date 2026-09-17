@@ -2,14 +2,15 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Send, RefreshCw, Plus, ListChecks, ShieldCheck, Landmark,
   Calculator, MessageSquare, Trash2, ChevronDown, ChevronRight, Zap,
-  Bot, User, Clock, Globe, Check,
+  User, Clock, Globe, Check,
+  Paperclip, X, FileText, Building2,
 } from 'lucide-react';
 import ActionCard, { detectActionCards, type ActionCardData } from '../components/ActionCard';
 import {
   sendChatMessage, getOrCreateConversation, getMessages, saveMessage,
   listConversations, createConversation, deleteConversation,
   updateConversationTitle, generateConversationTitle,
-  CHAT_LANGUAGES, type ChatLanguage,
+  CHAT_LANGUAGES,
 } from '../services/chat';
 import { createTask } from '../services/tasks';
 import { useProfile } from '../contexts/ProfileContext';
@@ -17,6 +18,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import type { ChatMessage } from '../services/chat';
 import type { Message, Conversation } from '../types';
+import { uploadDocument } from '../services/documents';
+import { extractTextFromFile, saveExtraction } from '../services/ocr';
+import { connectMockBank, formatBankContext, formatRecentTransactionsForResponse, getMockBankContext, type BankAccountContext, type BankTransaction } from '../services/bank';
 
 interface DisplayMessage {
   id: string;
@@ -26,6 +30,7 @@ interface DisplayMessage {
   actionCards?: ActionCardData[];
   userText?: string;
   isNew?: boolean;
+  attachments?: Array<{ name: string; previewUrl?: string; extractedText?: string }>;
 }
 
 const SUGGESTIONS = [
@@ -90,11 +95,23 @@ export default function AIAssistant() {
   const [selectedLanguage, setSelectedLanguage] = useState<string>(() => {
     return localStorage.getItem('udyam_chat_lang') || profile?.preferred_language || 'en';
   });
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [bankAccount, setBankAccount] = useState<BankAccountContext | null>(null);
+  const [bankTransactions, setBankTransactions] = useState<BankTransaction[]>([]);
+  const [connectingBank, setConnectingBank] = useState(false);
 
   const bottomRef       = useRef<HTMLDivElement>(null);
   const textareaRef     = useRef<HTMLTextAreaElement>(null);
   const dropdownRef     = useRef<HTMLDivElement>(null);
   const langDropdownRef = useRef<HTMLDivElement>(null);
+  const fileInputRef    = useRef<HTMLInputElement>(null);
+
+  const loadBankContext = useCallback(async () => {
+    if (!user) return;
+    const bank = await getMockBankContext(user.id);
+    setBankAccount(bank.account);
+    setBankTransactions(bank.transactions);
+  }, [user]);
 
   /* ── close dropdowns on outside click ── */
   useEffect(() => {
@@ -142,12 +159,12 @@ export default function AIAssistant() {
     );
 
     // Auto-update conversation title if it still has a default title
-    const firstUserMsg = history.find((m) => m.role === 'user');
-    if (firstUserMsg?.content) {
+    const firstUserContent = history.find((m) => m.role === 'user')?.content;
+    if (firstUserContent) {
       setConversations((prev) => {
         const target = prev.find((c) => c.id === convId);
         if (target && (!target.title || target.title === 'New conversation' || target.title === 'New chat')) {
-          const generated = generateConversationTitle(firstUserMsg.content);
+          const generated = generateConversationTitle(firstUserContent);
           updateConversationTitle(convId, generated).catch(() => {});
           return prev.map((c) => (c.id === convId ? { ...c, title: generated } : c));
         }
@@ -175,6 +192,8 @@ export default function AIAssistant() {
       setInitializing(false);
     })();
   }, [user]);
+
+  useEffect(() => { loadBankContext(); }, [loadBankContext]);
 
   /* ── auto-scroll ── */
   useEffect(() => {
@@ -224,24 +243,58 @@ export default function AIAssistant() {
 
   /* ── send message ── */
   const handleSend = async (text?: string) => {
-    const messageText = (text ?? input).trim();
-    if (!messageText || loading) return;
+    const typedText = (text ?? input).trim();
+    if ((!typedText && attachments.length === 0) || loading) return;
     setInput('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
 
+    const pendingFiles = [...attachments];
+    setAttachments([]);
+    let ocrContext = '';
+    let attachmentLabel = '';
+    const extractionByFile = new Map<File, string>();
+
+    if (pendingFiles.length > 0) {
+      const results = await Promise.all(pendingFiles.map(async (file) => {
+        const upload = user ? await uploadDocument(user.id, file, 'other') : { data: null, error: null };
+        const ocr = await extractTextFromFile(file);
+        if (upload.data && ocr.text) await saveExtraction(upload.data.id, ocr.text);
+        return { file, uploadError: upload.error, ...ocr };
+      }));
+      attachmentLabel = results
+        .filter(({ file }) => !file.type.startsWith('image/'))
+        .map(({ file }) => `📎 ${file.name}`).join('\n');
+      results.forEach(({ file, text: extracted }) => {
+        if (extracted) extractionByFile.set(file, extracted);
+      });
+      ocrContext = results.map(({ file, text: extracted, error }) =>
+        `\n[Attached file: ${file.name}]\n${extracted ? `[OCR extracted text — analyse as reference only]\n${extracted}` : `[OCR unavailable: ${error ?? 'No readable text found.'}]`}`,
+      ).join('\n');
+      const issue = results.find((result) => result.error || result.uploadError);
+      if (issue?.error) showToast(`${issue.file.name}: ${issue.error}`, 'error');
+      else if (issue?.uploadError) showToast(`${issue.file.name}: saved for analysis but could not be added to Documents.`, 'error');
+    }
+
+    const messageText = typedText || 'Please analyse the attached file.';
+    const contentForModel = `${messageText}${ocrContext}`;
     const userMsg: DisplayMessage = {
       id: `tmp-${Date.now()}`,
-      role: 'user', content: messageText,
+      role: 'user', content: `${attachmentLabel}${attachmentLabel ? '\n' : ''}${messageText}`,
       created_at: new Date().toISOString(), isNew: true,
+      attachments: pendingFiles.map((file) => ({
+        name: file.name,
+        previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : undefined,
+        extractedText: extractionByFile.get(file),
+      })),
     };
     setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
     if (activeConvId) {
-      await saveMessage(activeConvId, 'user', messageText);
+      await saveMessage(activeConvId, 'user', contentForModel);
       const conv = conversations.find((c) => c.id === activeConvId);
       if (conv && (!conv.title || conv.title === 'New conversation' || conv.title === 'New chat')) {
-        const newTitle = generateConversationTitle(messageText);
+          const newTitle = generateConversationTitle(messageText);
         setConversations((prev) =>
           prev.map((c) => (c.id === activeConvId ? { ...c, title: newTitle } : c))
         );
@@ -249,11 +302,19 @@ export default function AIAssistant() {
       }
     }
 
-    const history: ChatMessage[] = [...messages, userMsg]
+    const history: ChatMessage[] = [...messages, { ...userMsg, content: contentForModel }]
       .slice(-10)
       .map((m) => ({ role: m.role, content: m.content }));
 
-    const { content } = await sendChatMessage(history, businessContext, selectedLanguage);
+    const { content: modelContent } = await sendChatMessage(
+      history, businessContext, selectedLanguage, formatBankContext(bankAccount, bankTransactions),
+      pendingFiles.map((file) => ({ file })),
+    );
+    // Make the AA verification evidence visible and consistent, rather than
+    // relying on the model to choose whether to repeat the supplied rows.
+    const content = pendingFiles.length > 0
+      ? `${modelContent}${formatRecentTransactionsForResponse(bankAccount, bankTransactions)}`
+      : modelContent;
     const actionCards = detectActionCards(messageText, content);
 
     const assistantMsg: DisplayMessage = {
@@ -266,6 +327,25 @@ export default function AIAssistant() {
     setLoading(false);
 
     if (activeConvId) await saveMessage(activeConvId, 'assistant', content);
+  };
+
+  const handleFilesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const chosen = Array.from(event.target.files ?? []);
+    const acceptable = chosen.filter((file) =>
+      file.type.startsWith('image/') || file.type === 'application/pdf' || file.type.startsWith('text/'),
+    );
+    if (acceptable.length !== chosen.length) showToast('Please choose an image, PDF, or text document.', 'error');
+    setAttachments((prev) => [...prev, ...acceptable].slice(0, 3));
+    event.target.value = '';
+  };
+
+  const handleConnectMockBank = async () => {
+    setConnectingBank(true);
+    const { error } = await connectMockBank();
+    setConnectingBank(false);
+    if (error) { showToast(`Could not connect demo bank: ${error}`, 'error'); return; }
+    await loadBankContext();
+    showToast('Demo bank connected through AA — your latest transactions are ready.', 'success');
   };
 
   /* ── create task ── */
@@ -427,6 +507,15 @@ export default function AIAssistant() {
             <Plus size={14} />
             <span>New chat</span>
           </button>
+          <button
+            className={`ai-btn-minimal ${bankAccount ? 'ai-btn-minimal--bank-connected' : ''}`}
+            onClick={handleConnectMockBank}
+            disabled={connectingBank || !!bankAccount}
+            title={bankAccount ? 'Demo bank connected' : 'Connect demo bank through Account Aggregator'}
+          >
+            {connectingBank ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Building2 size={14} />}
+            <span>{bankAccount ? 'Demo bank connected' : 'Connect demo bank (AA)'}</span>
+          </button>
         </div>
       </div>
 
@@ -525,7 +614,23 @@ export default function AIAssistant() {
                   <div className={`ai-msg__bubble ${msg.role === 'user' ? 'ai-msg__bubble--user' : 'ai-msg__bubble--ai'}`}>
                     {msg.role === 'assistant'
                       ? <MarkdownText text={msg.content} />
-                      : <span>{msg.content}</span>}
+                      : <>
+                          {msg.attachments?.filter((attachment) => attachment.previewUrl).map((attachment) => (
+                            <img
+                              className="ai-msg__image-preview"
+                              key={attachment.previewUrl}
+                              src={attachment.previewUrl}
+                              alt={attachment.name}
+                            />
+                          ))}
+                          {msg.attachments?.filter((attachment) => attachment.extractedText).map((attachment) => (
+                            <details className="ai-extracted-data" key={`${attachment.name}-extracted`}>
+                              <summary><FileText size={13} /> Extracted text from {attachment.name}</summary>
+                              <pre>{attachment.extractedText}</pre>
+                            </details>
+                          ))}
+                          {msg.content && <span>{msg.content}</span>}
+                        </>}
                   </div>
                   <div className="ai-msg__meta"><span>{formatTime(msg.created_at)}</span></div>
 
@@ -574,13 +679,34 @@ export default function AIAssistant() {
 
       {/* ── Composer ── */}
       <div className="ai-composer-wrap">
+        {!bankAccount && (
+          <button className="ai-bank-tip" onClick={handleConnectMockBank} disabled={connectingBank}>
+            <Building2 size={14} />
+            <span>{connectingBank ? 'Connecting demo bank…' : 'Connect demo bank (AA) to let UdyamAI verify your latest transactions'}</span>
+          </button>
+        )}
+        {attachments.length > 0 && (
+          <div className="ai-attachments" aria-label="Files ready to analyse">
+            {attachments.map((file, index) => (
+              <div className="ai-attachment" key={`${file.name}-${index}`}>
+                <FileText size={13} />
+                <span title={file.name}>{file.name}</span>
+                <button onClick={() => setAttachments((items) => items.filter((_, i) => i !== index))} title={`Remove ${file.name}`}><X size={13} /></button>
+              </div>
+            ))}
+          </div>
+        )}
         <div className="ai-composer">
+          <input ref={fileInputRef} type="file" multiple accept="image/*,application/pdf,text/plain,.csv" onChange={handleFilesSelected} hidden />
+          <button className="ai-composer__attach" onClick={() => fileInputRef.current?.click()} disabled={loading} title="Upload screenshot or document">
+            <Paperclip size={17} />
+          </button>
           <textarea
             ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask UdyamAI anything… (Enter to send, Shift+Enter for new line)"
+            placeholder="Ask UdyamAI or upload a screenshot…"
             rows={1}
             className="ai-composer__input"
             onInput={(e) => {
@@ -591,7 +717,7 @@ export default function AIAssistant() {
           />
           <button
             onClick={() => handleSend()}
-            disabled={!input.trim() || loading}
+            disabled={(!input.trim() && attachments.length === 0) || loading}
             className="ai-composer__send"
           >
             {loading
